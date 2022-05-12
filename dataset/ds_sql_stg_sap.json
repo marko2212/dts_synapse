@@ -1,0 +1,17 @@
+{
+	"name": "ds_sql_stg_sap",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_asql_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "sap"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

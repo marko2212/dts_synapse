@@ -1,0 +1,238 @@
+{
+	"name": "df_marko",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_dl_sap_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sourceSAP"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dl_mat_xls",
+						"type": "DatasetReference"
+					},
+					"name": "sourceMat"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dl_odeljak_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sourceBrend"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_dl_processed_dmd_sink_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sinkKomis"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dl_processed_dmd_sink_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sinkPovrat"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dl_processed_dmd_sink_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "selectRename"
+				},
+				{
+					"name": "filterPogonStat"
+				},
+				{
+					"name": "split1"
+				},
+				{
+					"name": "joinMat"
+				},
+				{
+					"name": "select4Col"
+				},
+				{
+					"name": "derivedKarton"
+				},
+				{
+					"name": "select3Col"
+				},
+				{
+					"name": "aggregateCount"
+				},
+				{
+					"name": "sortDatum"
+				},
+				{
+					"name": "filterRazlogPovrata"
+				},
+				{
+					"name": "aggregateSum"
+				},
+				{
+					"name": "sortDat"
+				},
+				{
+					"name": "derivedDate"
+				},
+				{
+					"name": "filterSkladKolic"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "selectRenBrend"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          DOKUMENT_ISPORUKE as integer,",
+				"          STAVKA as integer,",
+				"          OBLAST_PRODAJE as string,",
+				"          WBSTK as string,",
+				"          PRIMALAC_ROBE as long,",
+				"          TIP_ISPORUKE as string,",
+				"          TIP_PROD_DOK as string,",
+				"          DATUM_ISPORUKE as date 'yyyyMMdd',",
+				"          DOBAVLJAC as string,",
+				"          PLANIRANI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+				"          STVARNI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+				"          MATERIJAL as integer,",
+				"          KOLICINA as short,",
+				"          SKLADISNA_LOKACIJA as string,",
+				"          POGON as string,",
+				"          ODELJAK as string,",
+				"          SIFRA_RAZLOGA_POVRATA as string,",
+				"          OPIS_RAZLOGA_POVRATA as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceSAP",
+				"source(output(",
+				"          Sifra_materijala as integer,",
+				"          Broj_komada_u_kart as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceMat",
+				"source(output(",
+				"          Odeljak as string,",
+				"          BRAND as short,",
+				"          Opis as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceBrend",
+				"filterPogonStat select(mapColumn(",
+				"          PRIMALAC_ROBE,",
+				"          TIP_ISPORUKE,",
+				"          DATUM = STVARNI_DATUM_ISPORUKE,",
+				"          MATERIJAL,",
+				"          KOLICINA,",
+				"          SKLADISNA_LOKACIJA,",
+				"          ODELJAK,",
+				"          SIFRA_RAZLOGA_POVRATA,",
+				"          OPIS_RAZLOGA_POVRATA",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectRename",
+				"sourceSAP filter(POGON=='MD10' && WBSTK == 'C'",
+				"&& in(['10PZ', '40PZ', '90PZ','10CA', '10NI', 'PRM1', 'PRV1'], SKLADISNA_LOKACIJA)",
+				"&& in(['ZLR', 'ZLX', 'LB', 'ZLA', 'ZLE', 'ZLO', 'ZLF', 'RL', 'Y73', 'YO3', 'YU3', 'YZO1', 'YZU1'], TIP_ISPORUKE)) ~> filterPogonStat",
+				"join1 split(TIP_ISPORUKE=='ZLX' || TIP_ISPORUKE =='ZLR',",
+				"     disjoint: false) ~> split1@(Povrat, Komision)",
+				"select4Col, sourceMat join(MATERIJAL == Sifra_materijala,",
+				"     joinType:'inner',",
+				"     broadcast: 'auto')~> joinMat",
+				"filterRazlogPovrata select(mapColumn(",
+				"          DATUM,",
+				"          MATERIJAL,",
+				"          KOLICINA,",
+				"          ODELJAK,",
+				"          SIFRA_RAZLOGA_POVRATA,",
+				"          OPIS_RAZLOGA_POVRATA",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4Col",
+				"joinMat derive(Kartona = round(KOLICINA /Broj_komada_u_kart, 0, 2),",
+				"          Komada_ostalo = ( KOLICINA /Broj_komada_u_kart - round(KOLICINA /Broj_komada_u_kart, 0, 2) ) * Broj_komada_u_kart) ~> derivedKarton",
+				"filterSkladKolic select(mapColumn(",
+				"          PRIMALAC_ROBE,",
+				"          DATUM,",
+				"          ODELJAK,",
+				"          KOLICINA",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3Col",
+				"select3Col aggregate(groupBy(DATUM),",
+				"     Stavka_na_komisionom_nalogu = count(KOLICINA),",
+				"          Komisioni_nalog = countDistinct(PRIMALAC_ROBE)) ~> aggregateCount",
+				"aggregateCount sort(asc(DATUM, true)) ~> sortDatum",
+				"split1@Povrat filter(not (in(['P03', 'N03', 'N05', 'N05'], SIFRA_RAZLOGA_POVRATA))) ~> filterRazlogPovrata",
+				"derivedKarton aggregate(groupBy(DATUM),",
+				"     Povrat_robe_po_kartonu = sum(Kartona),",
+				"          Stavka_na_komisionom_nalogu = sum(Komada_ostalo)) ~> aggregateSum",
+				"aggregateSum sort(asc(DATUM, true)) ~> sortDat",
+				"sortDatum derive(day_of_week = dayOfWeek(DATUM),",
+				"          day_of_month = dayOfMonth(DATUM),",
+				"          day_of_year = dayOfYear(DATUM),",
+				"          week_of_year = weekOfYear(DATUM),",
+				"          year = year(DATUM)) ~> derivedDate",
+				"split1@Komision filter(in(['10PZ', '40PZ', '90PZ'], SKLADISNA_LOKACIJA) ",
+				"&& KOLICINA != 0 ",
+				"&& in(['LB', 'ZLA', 'ZLE', 'ZLO', 'ZLF', 'RL', 'Y73', 'YO3', 'YU3', 'YZO1', 'YZU1'], TIP_ISPORUKE)) ~> filterSkladKolic",
+				"selectRename, selectRenBrend join(selectRename@ODELJAK == selectRenBrend@Odeljak,",
+				"     joinType:'left',",
+				"     broadcast: 'auto')~> join1",
+				"sourceBrend select(mapColumn(",
+				"          Odeljak,",
+				"          Brend = Opis",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectRenBrend",
+				"derivedDate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['komisionAgg.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkKomis",
+				"sortDat sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['povratAgg.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkPovrat",
+				"filterSkladKolic sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['test2preporc.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

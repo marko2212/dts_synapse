@@ -1,0 +1,38 @@
+{
+	"name": "ds_dl_odelj_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_asa_dts",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Odeljak_fix.csv",
+				"folderPath": "dmd/Odeljak",
+				"fileSystem": "row"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "Odeljak",
+				"type": "String"
+			},
+			{
+				"name": "Brend",
+				"type": "String"
+			},
+			{
+				"name": "Opis",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

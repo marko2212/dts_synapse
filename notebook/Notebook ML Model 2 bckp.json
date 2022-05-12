@@ -1,0 +1,1360 @@
+{
+	"name": "Notebook ML Model 2 bckp",
+	"properties": {
+		"folder": {
+			"name": "Archive"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkSmall",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "7e2bc7da-84a2-4239-ab49-68ab457f91b4"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1",
+				"state": {
+					"050c61c6-a496-4450-8827-4e4bcf8449ab": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "2021-07-23",
+										"1": "1254"
+									},
+									{
+										"0": "2020-03-02",
+										"1": "2554"
+									},
+									{
+										"0": "2022-02-05",
+										"1": "367"
+									},
+									{
+										"0": "2020-06-24",
+										"1": "1145"
+									},
+									{
+										"0": "2019-07-06",
+										"1": "730"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "DATUM",
+										"type": "date"
+									},
+									{
+										"key": "1",
+										"name": "STAVKE_NA_KOMIS_NALOGU",
+										"type": "int"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala"
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"4c8c1409-a9c9-40b2-9e56-d5037802ce59": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "01",
+										"1": "BDF",
+										"2": "Nivea"
+									},
+									{
+										"0": "02",
+										"1": "Ferrero",
+										"2": "Ferrero"
+									},
+									{
+										"0": "04",
+										"1": "Johnson wax",
+										"2": "Johnson Wax"
+									},
+									{
+										"0": "06",
+										"1": "Diageo",
+										"2": "Diageo program"
+									},
+									{
+										"0": "09",
+										"1": "BDF",
+										"2": "Eucerin"
+									},
+									{
+										"0": "17",
+										"1": "BDF",
+										"2": "Hansaplast"
+									},
+									{
+										"0": "60",
+										"1": "Tikves",
+										"2": "Tikve? classic"
+									},
+									{
+										"0": "61",
+										"1": "Tikves",
+										"2": "Tikve? premium"
+									},
+									{
+										"0": "62",
+										"1": "Tikves",
+										"2": "Tikve? rakija"
+									},
+									{
+										"0": "63",
+										"1": "Tikves",
+										"2": "Tikve? standard"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "Odeljak",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "Brend",
+										"type": "string"
+									},
+									{
+										"key": "2",
+										"name": "Opis",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala"
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "count",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					}
+				}
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws/bigDataPools/SparkSmall",
+				"name": "SparkSmall",
+				"type": "Spark",
+				"endpoint": "https://synapsedtsws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmall",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Import library"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import pandas as pd\r\n",
+					"import numpy as np\r\n",
+					"\r\n",
+					"from dateutil.parser import parse \r\n",
+					"import matplotlib as mpl\r\n",
+					"import matplotlib.pyplot as plt\r\n",
+					"import matplotlib.pyplot as pyplot\r\n",
+					"import seaborn as sns\r\n",
+					"\r\n",
+					"from datetime import datetime\r\n",
+					"\r\n",
+					"import warnings\r\n",
+					"warnings.simplefilter(\"ignore\")\r\n",
+					"\r\n",
+					"from datetime import datetime\r\n",
+					"import time\r\n",
+					"import math\r\n",
+					"\r\n",
+					"from pandas.plotting import autocorrelation_plot\r\n",
+					"\r\n",
+					"# from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error   # metrics\r\n",
+					"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
+					"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
+					"# from statsmodels.tsa.ar_model import AR\r\n",
+					"# from statsmodels.tsa.arima_model import ARIMA\r\n",
+					"from statsmodels.tsa.statespace.sarimax import SARIMAX\r\n",
+					"from statsmodels.tsa.ar_model import AutoReg\r\n",
+					"from statsmodels.tsa.arima.model import ARIMA\r\n",
+					"# import pmdarima as pm\r\n",
+					"\r\n",
+					"\r\n",
+					"plt.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
+					"print('jes importedddd je :D')"
+				],
+				"attachments": null,
+				"execution_count": 1
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Access Azure SQL database "
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"jdbcHostname = \"srv-db-sql-dmd.database.windows.net\"\r\n",
+					"jdbcDatabase = \"db-sql-dmd\"\r\n",
+					"jdbcPort = \"1433\"\r\n",
+					"username = \"marko\"\r\n",
+					"password = \"5Avramovic!\"\r\n",
+					"jdbcUrl = \"jdbc:sqlserver://{0}:{1};database={2}\".format(jdbcHostname, jdbcPort, jdbcDatabase)\r\n",
+					"connectionProperties = {\r\n",
+					"    \"user\" : username,\r\n",
+					"    \"password\" : password,\r\n",
+					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
+					"}\r\n",
+					"pushdown_query = \"(SELECT top(5) DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionOdeljAggFinal WHERE BREND = 'Ferrero') Ferrero\"\r\n",
+					"df_ferrero = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+					"display(df_ferrero)\r\n",
+					"\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 2
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Access Data Lake Gen 2 using secret key - not working"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"spark.conf.set(\"fs.azure.account.auth.type\", \"SAS\")\r\n",
+					"spark.conf.set(\"fs.azure.sas.token.provider.type\", \"com.microsoft.azure.synapse.tokenlibrary.AkvBasedSASProvider\")\r\n",
+					"spark.conf.set(\"spark.storage.synapse.akv\", \"https://dtsmlws9956541205.vault.azure.net/\")\r\n",
+					"spark.conf.set(\"spark.storage.akv.secret\", \"jPsmUFd82epLoYrQVfsPilAsPmFd0y6EJ8TEzJzIDZIFU39eZqV2tfBR73ATfCeSaJp2DMJrYDuWEUwyojKKuw==\")\r\n",
+					"\r\n",
+					"df = spark.read.csv('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/SAP/DMD_2020.csv')\r\n",
+					"# df = spark.read.csv('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd')\r\n",
+					"\r\n",
+					"\r\n",
+					"display(df.limit(10))"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from notebookutils import mssparkutils\r\n",
+					"# mssparkutils.credentials.help()\r\n",
+					"accountKey = mssparkutils.credentials.getSecret('keywaultdts', 'secretdts')"
+				],
+				"attachments": null,
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from notebookutils import mssparkutils  \r\n",
+					"mssparkutils.fs.mount(\r\n",
+					"    \"abfss://row@dlsynapsedts.dfs.core.windows.net\", #ADLS GEN 2 PATH\r\n",
+					"    \"/test2\", #Mount Point Name\r\n",
+					"    { \"accountKey\" : accountKey}\r\n",
+					")"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Access Blob storage using AccountKey - pression issue"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from notebookutils import mssparkutils  \r\n",
+					"mssparkutils.fs.mount(\r\n",
+					"    \"abfss://row@dlsynapsedts.dfs.core.windows.net\", #ADLS GEN 2 PATH\r\n",
+					"    \"/test\", #Mount Point Name\r\n",
+					"    { \"accountKey\" : \"jPsmUFd82epLoYrQVfsPilAsPmFd0y6EJ8TEzJzIDZIFU39eZqV2tfBR73ATfCeSaJp2DMJrYDuWEUwyojKKuw==\"}\r\n",
+					")\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"jobId = mssparkutils.env.getJobId()\r\n",
+					"df = spark.read.load('synfs:/' + jobId + '/test/dmd/Odeljak/Odeljak_fix.csv', format = 'csv')\r\n",
+					"display(df)"
+				],
+				"attachments": null,
+				"execution_count": 5
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Direct access from Data Lake Gen 2 - permision issue"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/Odeljak/Odeljak_fix.csv', format='csv'\r\n",
+					"## If header exists uncomment line below\r\n",
+					", header=True\r\n",
+					")\r\n",
+					"display(df.limit(10))"
+				],
+				"attachments": null,
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df.write.mode('overwrite').option('header', 'true').csv('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/')\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 4
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Output using Spark - Store output on Blob Storage - work"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Output using Spark\r\n",
+					"folder_name = \"fererro\"\r\n",
+					"(df\r\n",
+					" .coalesce(1)\r\n",
+					" .write\r\n",
+					" .mode(\"overwrite\")\r\n",
+					" .option(\"header\", \"true\")\r\n",
+					" .format(\"com.databricks.spark.csv\")\r\n",
+					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
+				],
+				"attachments": null,
+				"execution_count": 20
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Library issue"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error       #, mean_absolute_percentage_error\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 46
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from sklearn.metrics import  mean_absolute_percentage_error\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import sklearn\r\n",
+					"sklearn.show_versions()"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"pip install -U scikit-learn\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Evaluating the models with data - create function"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def metric_table(test, predictions):\r\n",
+					"    \r\n",
+					"  mse = mean_squared_error(test, predictions)\r\n",
+					"  model_r2, model_RMSE, model_MAE, model_MSE, model_MAPE, model_Adj_R2 = [], [], [], [], [], []\r\n",
+					"\r\n",
+					"\r\n",
+					"  r2 = r2_score(test, predictions)\r\n",
+					"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
+					"  mae = mean_absolute_error(test, predictions)\r\n",
+					"  mse = mean_squared_error(test, predictions)\r\n",
+					"#   mape = mean_absolute_percentage_error(test, predictions)\r\n",
+					"\r\n",
+					"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
+					"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
+					"\r\n",
+					"  model_r2.append(r2)\r\n",
+					"  model_RMSE.append(rmse)\r\n",
+					"  model_MAE.append(mae)\r\n",
+					"  model_MSE.append(mse)\r\n",
+					"#   model_MAPE.append(mape)\r\n",
+					"  model_Adj_R2.append(adj_r2)\r\n",
+					"\r\n",
+					"\r\n",
+					"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE})  #, \"MAPE\": model_MAPE})\r\n",
+					"  df_result = round(df_result,3)\r\n",
+					"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+					"  df_result\r\n",
+					"  return df_result"
+				],
+				"attachments": null,
+				"execution_count": 50
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Import dataset"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# set test set\r\n",
+					"n = 15"
+				],
+				"attachments": null,
+				"execution_count": 51
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"dataset = pd.read_csv('https://raw.githubusercontent.com/marko2212/test_data/main/DMD_dataset.csv', header=0, parse_dates=[0], dayfirst=True)\r\n",
+					"df = dataset\r\n",
+					"# df.index = df.iloc[:, 0]   \r\n",
+					"df = df[df['DATUM'].dt.weekday != 6]         # removing sunday (6) from dummy df_date\r\n",
+					"df = df.reset_index(drop=True)\r\n",
+					"# df = features\r\n",
+					"df"
+				],
+				"attachments": null,
+				"execution_count": 52
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Test-Train Split"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"train, test = df.iloc[:-n, -1], df.iloc[-n:, -1]                                # values\r\n",
+					"test_date = dataset.iloc[-n:, 0:1]\r\n",
+					"train"
+				],
+				"attachments": null,
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"data = train\r\n",
+					"predict =[]\r\n",
+					"for t in test:\r\n",
+					"    model = ARIMA(data, order=(5,1,1))\r\n",
+					"    model_fit = model.fit()\r\n",
+					"    y = model_fit.forecast()\r\n",
+					"    print(y[0][0])\r\n",
+					"    # print(y)                # for now model.ARIMA\r\n",
+					"    predict.append(y[0][0])\r\n",
+					"    # predict.append(y)         # for now model.ARIMA\r\n",
+					"    data = np.append(data, t)\r\n",
+					"    data = pd.Series(data)\r\n",
+					"# predict"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import pandas as pd\r\n",
+					"import numpy as np\r\n",
+					"import matplotlib.pyplot as plt\r\n",
+					"\r\n",
+					"# Load AutoReg class from statsmodels.tsa.ar_model module\r\n",
+					"from statsmodels.tsa.ar_model import AutoReg\r\n",
+					"# Load and plot the time-series data\r\n",
+					"#\r\n",
+					"url='https://raw.githubusercontent.com/jenfly/opsd/master/opsd_germany_daily.csv'\r\n",
+					"df = pd.read_csv(url,sep=\",\")\r\n",
+					"df['Consumption'].plot()"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#\r\n",
+					"# Create training and test data\r\n",
+					"#\r\n",
+					"train_data = df['Consumption'][:len(df)-100]\r\n",
+					"test_data = df['Consumption'][len(df)-100:]\r\n",
+					"#\r\n",
+					"# Instantiate and fit the AR model with training data\r\n",
+					"#\r\n",
+					"ar_model = AutoReg(train_data, lags=8).fit()\r\n",
+					"#\r\n",
+					"# Print Summary\r\n",
+					"#\r\n",
+					"print(ar_model.summary())"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"test_data\r\n",
+					"test"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"model = ARIMA(train, order=(5,1,1))"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# from statsmodels.tsa.ar_model import AR       # deprecated\r\n",
+					"from statsmodels.tsa.ar_model import AutoReg\r\n",
+					"# statsmodels.tsa.AR has been deprecated in favor of statsmodels.tsa.AutoReg and\r\n",
+					"# statsmodels.tsa.SARIMAX.\r\n",
+					"# model = AR(train)                           # deprecated\r\n",
+					"model = AutoReg(train, lags=21)\r\n",
+					"model_fit = model.fit()\r\n",
+					"model_fit\r\n",
+					"# model_fit.summary()"
+				],
+				"attachments": null,
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"model_fit.forecast().values[0]"
+				],
+				"attachments": null,
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"data = train\r\n",
+					"predict =[]\r\n",
+					"for t in test:\r\n",
+					"    model = ARIMA(data, order=(5,1,1))\r\n",
+					"    model_fit = model.fit()\r\n",
+					"    y = model_fit.forecast()\r\n",
+					"    # print(y[0][0])\r\n",
+					"    print(y.values[0])\r\n",
+					"    # print(y)                # for now model.ARIMA\r\n",
+					"    # predict.append(y[0][0])\r\n",
+					"    predict.append(y.values[0])\r\n",
+					"    # predict.append(y)         # for now model.ARIMA\r\n",
+					"    data = np.append(data, t)\r\n",
+					"    data = pd.Series(data)\r\n",
+					"# predict"
+				],
+				"attachments": null,
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"pyplot.figure(figsize=(8, 5), dpi=80)\r\n",
+					"\r\n",
+					"pyplot.plot(test.values)\r\n",
+					"pyplot.plot(predict, color='red')\r\n",
+					"pyplot.show()\r\n",
+					"metric_table(test, predict)             # metric table"
+				],
+				"attachments": null,
+				"execution_count": 32
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Regression"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\r\n",
+					"y = dataset.iloc[:, -1].values\r\n",
+					"\r\n",
+					"# Select all types of numerical data\r\n",
+					"numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64'] \r\n",
+					"numerical_df = dataset.select_dtypes(include=numerics)\r\n",
+					"X = numerical_df.iloc[:, :-1]\r\n",
+					"d = dataset\r\n",
+					"d['day']             = d['DATUM'].dt.day\r\n",
+					"d[['day']]\r\n",
+					"X = d[['day']]\r\n",
+					"y"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from sklearn.model_selection import train_test_split\r\n",
+					"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 0)\r\n",
+					"X_train"
+				],
+				"attachments": null,
+				"execution_count": 68
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from sklearn.preprocessing import StandardScaler\r\n",
+					"sc = StandardScaler()\r\n",
+					"X_train = sc.fit_transform(X_train)\r\n",
+					"X_test = sc.transform(X_test)"
+				],
+				"attachments": null,
+				"execution_count": 69
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Evaluating the models with data using this function\r\n",
+					"\r\n",
+					"model_r2, model_RMSE, model_MAE, model_MSE = [], [], [], []\r\n",
+					"\r\n",
+					"def evaluate(model):\r\n",
+					"    model.fit(X_train,y_train)\r\n",
+					"    y_pred=model.predict(X_test) \r\n",
+					"    \r\n",
+					"    # printing the model name and scores\r\n",
+					"    r2 = r2_score(y_test, y_pred)\r\n",
+					"    rmse = np.sqrt(mean_squared_error(y_test, y_pred))\r\n",
+					"    mae = mean_absolute_error(y_test, y_pred)\r\n",
+					"    mse = mean_squared_error(y_test, y_pred)\r\n",
+					"    print(\"Model name:------->    \",model)\r\n",
+					"    print(\"R2   score:------->\",round(r2,2))\r\n",
+					"    print('RMSE score:------->',round(rmse,2))\r\n",
+					"    print('MAE  score:------->',round(mae,2))\r\n",
+					"    print('MSE  score:------->',round(mse,2))\r\n",
+					"    print(\"<<<<-------------------------------------------------------------------->>>>\")\r\n",
+					"    model_r2.append(r2)\r\n",
+					"    model_RMSE.append(rmse)\r\n",
+					"    model_MAE.append(mae)\r\n",
+					"    model_MSE.append(mse)"
+				],
+				"attachments": null,
+				"execution_count": 70
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Initialize the models\r\n",
+					"lir = LinearRegression()                                                                      # linear regression\r\n",
+					"pr = LinearRegression()                                                                       # polynomial regression\r\n",
+					"logr = LogisticRegression()\r\n",
+					"dtr = DecisionTreeRegressor(random_state = 0)                                                 # decision tree regression\r\n",
+					"rfr = RandomForestRegressor(n_estimators = 100, random_state = 0)                             # random forest regression\r\n",
+					"svr = SVR(kernel = 'rbf')                                                                     # support vector regression\r\n",
+					"rr = Ridge(alpha=1.0)                                                                         # ridge regression\r\n",
+					"lsr = Lasso(alpha=2.0, max_iter = 10000)                                                      # lasso regression\r\n",
+					"knn = neighbors.KNeighborsRegressor()                                                         # KNeighbors regression\r\n",
+					"xgb = XGBRegressor()                                                                          # XGBRegressor\r\n",
+					"# xgb = XGBRegressor(n_estimators=1000, max_depth=7, eta=0.1, subsample=0.7, colsample_bytree=0.8)\r\n",
+					"# xgb = XGBClassifier(learning_rate=0.1,n_estimators=500,random_state=42)\r\n",
+					"\r\n",
+					"poly_reg = PolynomialFeatures(degree = 4)\r\n",
+					"X_poly = poly_reg.fit_transform(X_train)\r\n",
+					"\r\n",
+					"models=[lir, pr,logr,  dtr, rfr, svr, rr, lsr, knn, xgb] #create a list of models\r\n",
+					"model_names = ['Linear Regression', 'Polynomial Regression','Logistic Regression', 'Decision Tree Regressoion', 'Random Forest Regression',\r\n",
+					"               'Support Vector Regression', 'Ridge regression', 'Lasso regression', 'KNeighbors regression', 'XGB Regression']\r\n",
+					"\r\n",
+					"\r\n",
+					"for model in models:\r\n",
+					"    evaluate(model)"
+				],
+				"attachments": null,
+				"execution_count": 71
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# sort models by r2\r\n",
+					"df_result = pd.DataFrame({\"R2\":model_r2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE, \"ML Models\": model_names})\r\n",
+					"df_result = round(df_result,3)\r\n",
+					"df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+					"df_result.style\\\r\n",
+					"    .background_gradient(\"Blues\",  subset=['R2'])\\\r\n",
+					"    .background_gradient(\"Blues_r\",  subset=['RMSE', 'MAE', 'MSE'])"
+				],
+				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from sklearn.ensemble import RandomForestRegressor\r\n",
+					"regressor = RandomForestRegressor(n_estimators = 100, random_state = 0)\r\n",
+					"regressor.fit(X_train, y_train)"
+				],
+				"attachments": null,
+				"execution_count": 72
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"y_pred = rfr.predict(X_test)\r\n",
+					"np.set_printoptions(precision=2)\r\n",
+					"\r\n",
+					"df_result = pd.DataFrame({\"predicted\":np.round(y_pred), \"real\": y_test, \"diff\": abs(np.round(y_pred) - y_test)})\r\n",
+					"df_result['diff%'] = df_result['diff'] / df_result['real']*100 \r\n",
+					"# df_result = df_result.astype(int)\r\n",
+					"# df_result\r\n",
+					"# df_result[\"diff%\"].mean()\r\n",
+					"# df_result[\"real\"].mean()\r\n",
+					"# df_result\r\n",
+					"# df_result['diff_2'] = df_result['diff'] *df_result['diff']\r\n",
+					"# df_result['diff_2'].sum()/25\r\n",
+					"# df_result[['diff']].sum()/25\r\n",
+					"# df_result['diff'].total()\r\n",
+					"df_result"
+				],
+				"attachments": null,
+				"execution_count": 73
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"plt.figure(figsize=(8,5))\r\n",
+					"# plt.figure(figsize=(20,7))\r\n",
+					"plt.plot(y_pred, linestyle='-', marker='o', label='predicted')\r\n",
+					"plt.plot(y_test,  label='real')\r\n",
+					"plt.title('Real vs Predicted')\r\n",
+					"# plt.grid(axis='y')\r\n",
+					"plt.legend()\r\n",
+					"plt.show()"
+				],
+				"attachments": null,
+				"execution_count": 76
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"pip install -U scikit-learn\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 77
+			}
+		]
+	}
+}

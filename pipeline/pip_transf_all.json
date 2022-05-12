@@ -1,0 +1,111 @@
+{
+	"name": "pip_transf_all",
+	"properties": {
+		"activities": [
+			{
+				"name": "Stored procedure povrat brend",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "pip_sp_komis",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[PovratBrend]"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "pip_sp_komis",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Stored procedure komis_brend",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[Komision]"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Stored procedure komis_brend",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[KomisionBrend]"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Stored procedure Povrat",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Stored procedure povrat brend",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[Povrat]"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-05-12T12:06:15Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

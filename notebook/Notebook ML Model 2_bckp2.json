@@ -1,0 +1,469 @@
+{
+	"name": "Notebook ML Model 2_bckp2",
+	"properties": {
+		"folder": {
+			"name": "Archive"
+		},
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "SparkSmall",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "b594705c-cde8-40c5-acf8-0b3283f4a9f8"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1"
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws/bigDataPools/SparkSmall",
+				"name": "SparkSmall",
+				"type": "Spark",
+				"endpoint": "https://synapsedtsws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmall",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.1",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Import library"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"import numpy as np\r\n",
+					"import pandas as pd\r\n",
+					"from pandas.plotting import autocorrelation_plot\r\n",
+					"import matplotlib as mpl\r\n",
+					"import matplotlib.pyplot as pyplot\r\n",
+					"import matplotlib.pyplot as plt\r\n",
+					"import seaborn as sns\r\n",
+					"\r\n",
+					"from datetime import datetime, timedelta\r\n",
+					"import time\r\n",
+					"from dateutil.parser import parse \r\n",
+					"import math\r\n",
+					"\r\n",
+					"import warnings\r\n",
+					"warnings.simplefilter(\"ignore\")\r\n",
+					"\r\n",
+					"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error   # metrics\r\n",
+					"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
+					"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
+					"from statsmodels.tsa.statespace.sarimax import SARIMAX\r\n",
+					"from statsmodels.tsa.ar_model import AutoReg\r\n",
+					"from statsmodels.tsa.arima.model import ARIMA\r\n",
+					"import pmdarima as pm\r\n",
+					"\r\n",
+					"from sklearn.ensemble import RandomForestRegressor\r\n",
+					"from sklearn.linear_model import LinearRegression\r\n",
+					"from sklearn.preprocessing import PolynomialFeatures\r\n",
+					"from sklearn.tree import DecisionTreeRegressor\r\n",
+					"from sklearn.model_selection import cross_val_score\r\n",
+					"from sklearn.svm import SVR\r\n",
+					"from sklearn.linear_model import LogisticRegression\r\n",
+					"from sklearn.linear_model import Ridge\r\n",
+					"from sklearn.linear_model import Lasso\r\n",
+					"from sklearn import neighbors\r\n",
+					"from xgboost import XGBRegressor \r\n",
+					"\r\n",
+					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
+					"print('lib are imported')"
+				],
+				"attachments": null,
+				"execution_count": 14
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Evaluating the models with data - create function"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def metric_table(test, predictions):\r\n",
+					"    \r\n",
+					"  mse = mean_squared_error(test, predictions)\r\n",
+					"  model_r2, model_RMSE, model_MAE, model_MSE, model_Adj_R2 = [], [], [], [], []\r\n",
+					"\r\n",
+					"\r\n",
+					"  r2 = r2_score(test, predictions)\r\n",
+					"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
+					"  mae = mean_absolute_error(test, predictions)\r\n",
+					"  mse = mean_squared_error(test, predictions)\r\n",
+					"  # mape = mean_absolute_percentage_error(test, predictions)\r\n",
+					"\r\n",
+					"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
+					"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
+					"\r\n",
+					"  model_r2.append(r2)\r\n",
+					"  model_RMSE.append(rmse)\r\n",
+					"  model_MAE.append(mae)\r\n",
+					"  model_MSE.append(mse)\r\n",
+					"  # model_MAPE.append(mape)\r\n",
+					"  model_Adj_R2.append(adj_r2)\r\n",
+					"\r\n",
+					"\r\n",
+					"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE})\r\n",
+					"  df_result = round(df_result,3)\r\n",
+					"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+					"  df_result\r\n",
+					"  return df_result"
+				],
+				"attachments": null,
+				"execution_count": 6
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Create function that add all missing date"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def add_all_date(df, whitout_sun=0):\r\n",
+					"  rng = pd.date_range(start = df.index[0], end =df.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
+					"  df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
+					"  if whitout_sun == 1:\r\n",
+					"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
+					"  df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
+					"  df = df[df.index.weekday != 6]                                                # removing sunday (6) from df\r\n",
+					"  df = df_date_temp.join(df)                                                    # left join dataset on dummy date\r\n",
+					"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
+					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
+					"  return df\r\n",
+					"  \r\n",
+					"def add_all_date(df, whitout_sun=0):\r\n",
+					"  rng = pd.date_range(start = df.index[0], end =df.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
+					"  df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
+					"  if whitout_sun == 1:\r\n",
+					"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
+					"  df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
+					"  df = df[df.index.weekday != 6]                                                # removing sunday (6) from df\r\n",
+					"  df = df_date_temp.join(df)                                                    # left join dataset on dummy date\r\n",
+					"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
+					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
+					"  return df"
+				],
+				"attachments": null,
+				"execution_count": 7
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Import dataset"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": true,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# credentials\r\n",
+					"jdbcHostname = \"srv-db-sql-dmd.database.windows.net\"\r\n",
+					"jdbcDatabase = \"db-sql-dmd\"\r\n",
+					"jdbcPort = \"1433\"\r\n",
+					"username = \"marko\"\r\n",
+					"password = \"5Avramovic!\"\r\n",
+					"jdbcUrl = \"jdbc:sqlserver://{0}:{1};database={2}\".format(jdbcHostname, jdbcPort, jdbcDatabase)\r\n",
+					"connectionProperties = {\r\n",
+					"    \"user\" : username,\r\n",
+					"    \"password\" : password,\r\n",
+					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
+					"}"
+				],
+				"attachments": null,
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# connect to database with credentials, execut SQL \r\n",
+					"pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ) Grupno\"\r\n",
+					"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+					"# display(df_spark)\r\n",
+					"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+					"\r\n",
+					"df.set_index('DATUM', inplace=True)\r\n",
+					"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+					"df"
+				],
+				"attachments": null,
+				"execution_count": 42
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Test-Train Split"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"n = 19\r\n",
+					"\r\n",
+					"df = add_all_date(df, )      # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+					"train = df.iloc[:-n]\r\n",
+					"test = df.iloc[-n:]\r\n",
+					"\r\n",
+					"test.head()"
+				],
+				"attachments": null,
+				"execution_count": 47
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Train ARIMA model and prediction"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# model = ARIMA(train, order=(28,0,0))\r\n",
+					"order = [28,0,0]\r\n",
+					"model = ARIMA(train, order=(order))\r\n",
+					"model_fit = model.fit()\r\n",
+					"prediction = model_fit.forecast(n)\r\n",
+					"\r\n",
+					"if not isinstance(prediction.index[0], datetime):               # ako index nije datum pretvori ga u datum\r\n",
+					"  prediction = prediction.to_frame().set_index(test.index)      # move series to dataframe and set index as test datum\r\n",
+					"\r\n",
+					"# korekcije\r\n",
+					"prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
+					"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
+					"prediction"
+				],
+				"attachments": null,
+				"execution_count": 46
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Graph"
+				],
+				"attachments": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# pyplot.figure(figsize=(8, 5), dpi=80)       # adjust graph size\r\n",
+					"pyplot.figure(figsize=(20, 7), dpi=80)       # adjust graph size\r\n",
+					"pyplot.plot(prediction, color='red', label='prediction')\r\n",
+					"pyplot.plot(test, label='real')\r\n",
+					"pyplot.legend(loc=\"upper left\")\r\n",
+					"pyplot.show()\r\n",
+					"# print(order)\r\n",
+					"metric_table(test, prediction)             # metric table\r\n",
+					""
+				],
+				"attachments": null,
+				"execution_count": 76
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/SAP/DMD_2020.csv', format='csv'\r\n",
+					"## If header exists uncomment line below\r\n",
+					"##, header=True\r\n",
+					")\r\n",
+					"display(df.limit(10))"
+				],
+				"attachments": null,
+				"execution_count": null
+			}
+		]
+	}
+}

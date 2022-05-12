@@ -1,0 +1,533 @@
+{
+	"name": "pip_copy_all_dl_sql",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy mat_csv_to_sql",
+				"description": "",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy pos_xlsx_to_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "Truncate table stg.materijal",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "SIFRA_MATERIJALA",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SIFRA_MATERIJALA",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "BROJ_KOMADA_U_KART",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "BROJ_KOMADA_U_KART",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_dl_mat_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sql_mat",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy odel_csv_to_sql",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy mat_csv_to_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE stg.odeljak",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Odeljak",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ODELJAK",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Brend",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "BREND",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_dl_odelj_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sql_odelj",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy pos_xlsx_to_sql",
+				"description": "",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy sap_csv_sql",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "*20*",
+							"enablePartitionDiscovery": false
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE stg.evidencijaPOS",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "datum",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "DATUM",
+									"type": "DateTime",
+									"physicalType": "date"
+								}
+							},
+							{
+								"source": {
+									"name": "brend",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "BREND_ORIG",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "šifra brenda",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SIFRA_BRENDA",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "vrsta dokumenta",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "VRSTA_DOKUMENTA",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "broj stavki",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "BROJ_STAVKI",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "broj paleta",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "BROJ_PALETA",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Broj kartona povrat",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "BROJ_KARTONA_POVRAT",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "Broj komada povrata",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "BROJ_KOMADA_POVRAT",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_dl_pos_xlsx",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sql_pos",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Copy sap_csv_sql",
+				"description": "",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFileName": "DMD_20*",
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE stg.sap",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "WBSTK",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "WBSTK",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "PRIMALAC_ROBE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "PRIMALAC_ROBE",
+									"type": "Int64",
+									"physicalType": "bigint"
+								}
+							},
+							{
+								"source": {
+									"name": "TIP_ISPORUKE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "TIP_ISPORUKE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "STVARNI_DATUM_ISPORUKE",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "STVARNI_DATUM_ISPORUKE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "MATERIJAL",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "MATERIJAL",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "KOLICINA",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "KOLICINA",
+									"type": "Double",
+									"physicalType": "float"
+								}
+							},
+							{
+								"source": {
+									"name": "SKLADISNA_LOKACIJA",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SKLADISNA_LOKACIJA",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "POGON",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "POGON",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ODELJAK",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "ODELJAK",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SIFRA_RAZLOGA_POVRATA",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "SIFRA_RAZLOGA_POVRATA",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "OPIS_RAZLOGA_POVRATA",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "OPIS_RAZLOGA_POVRATA",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_dl_sap_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_sql_stg_sap",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-05-12T12:25:59Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

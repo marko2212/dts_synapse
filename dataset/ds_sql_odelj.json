@@ -1,0 +1,27 @@
+{
+	"name": "ds_sql_odelj",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_asql_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ODELJAK",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BREND",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "odeljak"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

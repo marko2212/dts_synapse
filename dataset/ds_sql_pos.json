@@ -1,0 +1,54 @@
+{
+	"name": "ds_sql_pos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_asql_db",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DATUM",
+				"type": "date"
+			},
+			{
+				"name": "BREND_ORIG",
+				"type": "varchar"
+			},
+			{
+				"name": "SIFRA_BRENDA",
+				"type": "varchar"
+			},
+			{
+				"name": "VRSTA_DOKUMENTA",
+				"type": "varchar"
+			},
+			{
+				"name": "BROJ_STAVKI",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BROJ_PALETA",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BROJ_KARTONA_POVRAT",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BROJ_KOMADA_POVRAT",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "stg",
+			"table": "evidencijaPOS"
+		}
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}
