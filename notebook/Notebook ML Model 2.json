@@ -17,106 +17,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "5c90f2ab-6d05-4459-b492-4375778fe3d4"
+				"spark.autotune.trackingId": "e38b185d-4cb3-4a7f-afa5-bc0bc13ca74a"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1",
-				"state": {
-					"255af8da-03c1-4a4a-8cc9-31fc2d4cdd96": {
-						"type": "Synapse.DataFrame",
-						"sync_state": {
-							"table": {
-								"rows": [
-									{
-										"0": "2557"
-									},
-									{
-										"0": "2627"
-									},
-									{
-										"0": "3014"
-									},
-									{
-										"0": "2243"
-									},
-									{
-										"0": "2655"
-									},
-									{
-										"0": "0"
-									},
-									{
-										"0": "3469"
-									},
-									{
-										"0": "2450"
-									},
-									{
-										"0": "2557"
-									},
-									{
-										"0": "2989"
-									},
-									{
-										"0": "2310"
-									},
-									{
-										"0": "2767"
-									},
-									{
-										"0": "0"
-									},
-									{
-										"0": "3378"
-									},
-									{
-										"0": "2391"
-									},
-									{
-										"0": "2521"
-									},
-									{
-										"0": "2955"
-									},
-									{
-										"0": "2346"
-									},
-									{
-										"0": "2821"
-									}
-								],
-								"schema": [
-									{
-										"key": "0",
-										"name": "predicted_mean",
-										"type": "bigint"
-									}
-								],
-								"truncated": false
-							},
-							"isSummary": false,
-							"language": "scala"
-						},
-						"persist_state": {
-							"view": {
-								"type": "details",
-								"chartOptions": {
-									"chartType": "bar",
-									"aggregationType": "sum",
-									"categoryFieldKeys": [],
-									"seriesFieldKeys": [
-										"0"
-									],
-									"isStacked": false
-								}
-							}
-						}
-					}
-				}
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -138,7 +43,7 @@
 				"nodeCount": 10,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -154,8 +59,7 @@
 				},
 				"source": [
 					"## Import library"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -198,7 +102,6 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"attachments": null,
 				"execution_count": 55
 			},
 			{
@@ -212,8 +115,7 @@
 				},
 				"source": [
 					"### Evaluating the models with data - create function"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -258,7 +160,6 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"attachments": null,
 				"execution_count": 56
 			},
 			{
@@ -272,8 +173,7 @@
 				},
 				"source": [
 					"### Create function that add all missing date"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -301,7 +201,6 @@
 					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
 					"  return df"
 				],
-				"attachments": null,
 				"execution_count": 57
 			},
 			{
@@ -315,8 +214,7 @@
 				},
 				"source": [
 					"### Panda to spark function"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -358,7 +256,6 @@
 					"    p_schema = StructType(struct_list)\r\n",
 					"    return sqlContext.createDataFrame(pandas_df, p_schema)"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -372,8 +269,7 @@
 				},
 				"source": [
 					"#### Import dataset"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -402,7 +298,6 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"attachments": null,
 				"execution_count": 58
 			},
 			{
@@ -416,8 +311,7 @@
 				},
 				"source": [
 					"### Loop brends"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -445,7 +339,6 @@
 					"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
 					"df"
 				],
-				"attachments": null,
 				"execution_count": 59
 			},
 			{
@@ -459,8 +352,7 @@
 				},
 				"source": [
 					"### Train ARIMA model and prediction"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -491,7 +383,6 @@
 					"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
 					"prediction"
 				],
-				"attachments": null,
 				"execution_count": 62
 			},
 			{
@@ -505,8 +396,7 @@
 				},
 				"source": [
 					"### Graph"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -527,7 +417,6 @@
 					"pyplot.legend(loc=\"upper left\")\r\n",
 					"pyplot.show()"
 				],
-				"attachments": null,
 				"execution_count": 63
 			},
 			{
@@ -548,7 +437,6 @@
 					"a = pandas_to_spark(prediction)\r\n",
 					"display(a)"
 				],
-				"attachments": null,
 				"execution_count": 67
 			},
 			{
@@ -570,7 +458,6 @@
 					"prediction2 = prediction2[['DATUM', 'predicted_mean']]\r\n",
 					"prediction2"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -597,7 +484,6 @@
 					" .format(\"com.databricks.spark.csv\")\r\n",
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/Komision_stavke/' + folder_name))"
 				],
-				"attachments": null,
 				"execution_count": 86
 			}
 		]
