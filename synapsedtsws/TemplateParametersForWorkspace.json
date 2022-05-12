@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "synapsedtsws"
+		},
+		"ls_asql_db_connectionString": {
+			"value": ""
+		},
+		"ls_dl_asa_dts_accountKey": {
+			"value": ""
+		},
+		"synapsedtsws-WorkspaceDefaultSqlServer_connectionString": {
+			"value": ""
+		},
+		"ls_MLStdio_properties_typeProperties_subscriptionId": {
+			"value": "3d1a0d9a-7e0f-434a-bb08-b3b842299587"
+		},
+		"ls_MLStdio_properties_typeProperties_resourceGroupName": {
+			"value": "Synapse_Analytics"
+		},
+		"ls_dl_asa_dts_properties_typeProperties_url": {
+			"value": "https://dlsynapsedts.dfs.core.windows.net"
+		},
+		"synapsedtsws-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://dlsynapsedts.dfs.core.windows.net"
+		}
+	}
+}

@@ -1,0 +1,5948 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "synapsedtsws"
+		},
+		"ls_asql_db_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_asql_db'"
+		},
+		"ls_dl_asa_dts_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_dl_asa_dts'"
+		},
+		"synapsedtsws-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'synapsedtsws-WorkspaceDefaultSqlServer'"
+		},
+		"ls_MLStdio_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "3d1a0d9a-7e0f-434a-bb08-b3b842299587"
+		},
+		"ls_MLStdio_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "Synapse_Analytics"
+		},
+		"ls_dl_asa_dts_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlsynapsedts.dfs.core.windows.net"
+		},
+		"synapsedtsws-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlsynapsedts.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_copy_all_dl_sql')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy mat_csv_to_sql",
+						"description": "",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy pos_xlsx_to_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "Truncate table stg.materijal",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "SIFRA_MATERIJALA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SIFRA_MATERIJALA",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "BROJ_KOMADA_U_KART",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_KOMADA_U_KART",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_mat_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_mat",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy odel_csv_to_sql",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy mat_csv_to_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE stg.odeljak",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Odeljak",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ODELJAK",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Brend",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BREND",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_odelj_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_odelj",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy pos_xlsx_to_sql",
+						"description": "",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copy sap_csv_sql",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*20*",
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE stg.evidencijaPOS",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "datum",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DATUM",
+											"type": "DateTime",
+											"physicalType": "date"
+										}
+									},
+									{
+										"source": {
+											"name": "brend",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BREND_ORIG",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "šifra brenda",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SIFRA_BRENDA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "vrsta dokumenta",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "VRSTA_DOKUMENTA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "broj stavki",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_STAVKI",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "broj paleta",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_PALETA",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Broj kartona povrat",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_KARTONA_POVRAT",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Broj komada povrata",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_KOMADA_POVRAT",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_pos_xlsx",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_pos",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Copy sap_csv_sql",
+						"description": "",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "DMD_20*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE stg.sap",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "WBSTK",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "WBSTK",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "PRIMALAC_ROBE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PRIMALAC_ROBE",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "TIP_ISPORUKE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TIP_ISPORUKE",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "STVARNI_DATUM_ISPORUKE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "STVARNI_DATUM_ISPORUKE",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "MATERIJAL",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MATERIJAL",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "KOLICINA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "KOLICINA",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "SKLADISNA_LOKACIJA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SKLADISNA_LOKACIJA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "POGON",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "POGON",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ODELJAK",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ODELJAK",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "SIFRA_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SIFRA_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "OPIS_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "OPIS_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_sap_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_stg_sap",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:25:59Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_mat_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_mat')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_odelj_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_odelj')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_pos_xlsx')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_pos')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_sap_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_stg_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_copy_mat_csv_to_sql')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy mat_csv_to_sql",
+						"description": "",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "Truncate table stg.materijal",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "SIFRA_MATERIJALA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SIFRA_MATERIJALA",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "BROJ_KOMADA_U_KART",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_KOMADA_U_KART",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_mat_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_mat",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Pojedinacno stg"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-10T14:47:11Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_mat_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_mat')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_copy_odelj_csv_to_sql')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy odel_csv_to_sql",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE stg.odeljak",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Odeljak",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ODELJAK",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Brend",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BREND",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_odelj_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_odelj",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Pojedinacno stg"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-10T14:46:55Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_odelj_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_odelj')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_copy_pos_xlsx_to_sql')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy pos_xlsx_to_sql",
+						"description": "",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*20*",
+									"enablePartitionDiscovery": false
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE stg.evidencijaPOS",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "datum",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DATUM",
+											"type": "DateTime",
+											"physicalType": "date"
+										}
+									},
+									{
+										"source": {
+											"name": "brend",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BREND_ORIG",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "šifra brenda",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SIFRA_BRENDA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "vrsta dokumenta",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "VRSTA_DOKUMENTA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "broj stavki",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_STAVKI",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "broj paleta",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_PALETA",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Broj kartona povrat",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_KARTONA_POVRAT",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "Broj komada povrata",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "BROJ_KOMADA_POVRAT",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_pos_xlsx",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_pos",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Pojedinacno stg"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-10T14:46:51Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_pos_xlsx')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_pos')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_copy_sap_csv_to_sql')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy sap_csv_sql",
+						"description": "",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "DMD_20*",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE stg.sap",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "WBSTK",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "WBSTK",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "PRIMALAC_ROBE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PRIMALAC_ROBE",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "TIP_ISPORUKE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TIP_ISPORUKE",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "STVARNI_DATUM_ISPORUKE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "STVARNI_DATUM_ISPORUKE",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "MATERIJAL",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MATERIJAL",
+											"type": "Int32",
+											"physicalType": "int"
+										}
+									},
+									{
+										"source": {
+											"name": "KOLICINA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "KOLICINA",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "SKLADISNA_LOKACIJA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SKLADISNA_LOKACIJA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "POGON",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "POGON",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ODELJAK",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ODELJAK",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "SIFRA_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SIFRA_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "OPIS_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "OPIS_RAZLOGA_POVRATA",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_sap_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_stg_sap",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Pojedinacno stg"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-10T14:46:44Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_sap_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_stg_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_ml')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Notebook ML Model 2",
+						"type": "SynapseNotebook",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebook": {
+								"referenceName": "Notebook ML Model 2",
+								"type": "NotebookReference"
+							},
+							"snapshot": true,
+							"sparkPool": {
+								"referenceName": "SparkSmall",
+								"type": "BigDataPoolReference"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:06:32Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/notebooks/Notebook ML Model 2')]",
+				"[concat(variables('workspaceId'), '/bigDataPools/SparkSmall')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_povrat_brend')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Stored procedure povrat brend",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[PovratBrend]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "pojedinacno transf"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:06:04Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_sp_komis')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "pip_sp_komis",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[Komision]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "pojedinacno transf"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:05:20Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_sp_komis_brend')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Stored procedure komis_brend",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[KomisionBrend]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "pojedinacno transf"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:05:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_sp_povrat')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Stored procedure Povrat",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[Povrat]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "pojedinacno transf"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:05:17Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_transf_all')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Stored procedure povrat brend",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "pip_sp_komis",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[PovratBrend]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "pip_sp_komis",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Stored procedure komis_brend",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[Komision]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Stored procedure komis_brend",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[KomisionBrend]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Stored procedure Povrat",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "Stored procedure povrat brend",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[Povrat]"
+						},
+						"linkedServiceName": {
+							"referenceName": "ls_asql_db",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:06:15Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pl_df_marko')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_marko",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourceSAP": {},
+									"sourceMat": {},
+									"sourceBrend": {},
+									"sinkKomis": {},
+									"sinkPovrat": {},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "pojedinacno transf"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-05-12T12:05:12Z"
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/df_marko')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_mat_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Mat_fix.csv",
+						"folderPath": "dmd/Materijal",
+						"fileSystem": "row"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "SIFRA_MATERIJALA",
+						"type": "String"
+					},
+					{
+						"name": "BROJ_KOMADA_U_KART",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_mat_xls')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "archive"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "Sheet1",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Mat_fix.xlsx",
+						"folderPath": "dmd/Materijali",
+						"fileSystem": "row"
+					},
+					"firstRowAsHeader": true
+				},
+				"schema": [
+					{
+						"name": "Sifra_materijala",
+						"type": "String"
+					},
+					{
+						"name": "Broj_komada_u_kart",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_odelj_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Odeljak_fix.csv",
+						"folderPath": "dmd/Odeljak",
+						"fileSystem": "row"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Odeljak",
+						"type": "String"
+					},
+					{
+						"name": "Brend",
+						"type": "String"
+					},
+					{
+						"name": "Opis",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_odeljak_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "Odeljak.csv",
+						"folderPath": "dmd/SAP",
+						"fileSystem": "row"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Odeljak",
+						"type": "String"
+					},
+					{
+						"name": "BRAND",
+						"type": "String"
+					},
+					{
+						"name": "Opis",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_pos_xlsx')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Excel",
+				"typeProperties": {
+					"sheetName": "baza urađenih naloga",
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "evidencija_urađenih_naloga_POS_2020.xlsx",
+						"folderPath": "dmd/POS",
+						"fileSystem": "row"
+					},
+					"range": "A9:K1000000",
+					"firstRowAsHeader": true
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_processed_dmd_sink_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "archive"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "holder.csv",
+						"folderPath": "dmd/SAP",
+						"fileSystem": "processed"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_sap_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DMD_2020.csv",
+						"folderPath": "dmd/SAP",
+						"fileSystem": "row"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_sql_mat')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SIFRA_MATERIJALA",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BROJ_KOMADA_U_KART",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "materijal"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_sql_odelj')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ODELJAK",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BREND",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "odeljak"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_sql_pos')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DATUM",
+						"type": "date"
+					},
+					{
+						"name": "BREND_ORIG",
+						"type": "varchar"
+					},
+					{
+						"name": "SIFRA_BRENDA",
+						"type": "varchar"
+					},
+					{
+						"name": "VRSTA_DOKUMENTA",
+						"type": "varchar"
+					},
+					{
+						"name": "BROJ_STAVKI",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BROJ_PALETA",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BROJ_KARTONA_POVRAT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BROJ_KOMADA_POVRAT",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "evidencijaPOS"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_sql_stg_sap')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "stg",
+					"table": "sap"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_MLStdio')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMLService",
+				"typeProperties": {
+					"subscriptionId": "[parameters('ls_MLStdio_properties_typeProperties_subscriptionId')]",
+					"resourceGroupName": "[parameters('ls_MLStdio_properties_typeProperties_resourceGroupName')]",
+					"mlWorkspaceName": "DTS_ML_WS",
+					"authentication": "MSI"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_asql_db')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_asql_db_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ls_dl_asa_dts')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_dl_asa_dts_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ls_dl_asa_dts_accountKey')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapsedtsws-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('synapsedtsws-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapsedtsws-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('synapsedtsws-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/trg_copy_dl_to_sql')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Copy all from datalake to SQL stg tables",
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pip_copy_all_dl_sql",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-05-10T18:49:00",
+						"timeZone": "Central Europe Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								7
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/pip_copy_all_dl_sql')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/trg_ml')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pip_ml",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-05-12T12:35:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								9
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/pip_ml')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/trg_transf')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pip_transf_all",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-05-12T12:31:00Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								8
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/pip_transf_all')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				},
+				"managedVirtualNetwork": {
+					"type": "ManagedVirtualNetworkReference",
+					"referenceName": "default"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/df_marko')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_dl_sap_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourceSAP"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_mat_xls",
+								"type": "DatasetReference"
+							},
+							"name": "sourceMat"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_odeljak_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourceBrend"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkKomis"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkPovrat"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectRename"
+						},
+						{
+							"name": "filterPogonStat"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "joinMat"
+						},
+						{
+							"name": "select4Col"
+						},
+						{
+							"name": "derivedKarton"
+						},
+						{
+							"name": "select3Col"
+						},
+						{
+							"name": "aggregateCount"
+						},
+						{
+							"name": "sortDatum"
+						},
+						{
+							"name": "filterRazlogPovrata"
+						},
+						{
+							"name": "aggregateSum"
+						},
+						{
+							"name": "sortDat"
+						},
+						{
+							"name": "derivedDate"
+						},
+						{
+							"name": "filterSkladKolic"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "selectRenBrend"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          DOKUMENT_ISPORUKE as integer,",
+						"          STAVKA as integer,",
+						"          OBLAST_PRODAJE as string,",
+						"          WBSTK as string,",
+						"          PRIMALAC_ROBE as long,",
+						"          TIP_ISPORUKE as string,",
+						"          TIP_PROD_DOK as string,",
+						"          DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          DOBAVLJAC as string,",
+						"          PLANIRANI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          STVARNI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          MATERIJAL as integer,",
+						"          KOLICINA as short,",
+						"          SKLADISNA_LOKACIJA as string,",
+						"          POGON as string,",
+						"          ODELJAK as string,",
+						"          SIFRA_RAZLOGA_POVRATA as string,",
+						"          OPIS_RAZLOGA_POVRATA as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceSAP",
+						"source(output(",
+						"          Sifra_materijala as integer,",
+						"          Broj_komada_u_kart as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceMat",
+						"source(output(",
+						"          Odeljak as string,",
+						"          BRAND as short,",
+						"          Opis as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceBrend",
+						"filterPogonStat select(mapColumn(",
+						"          PRIMALAC_ROBE,",
+						"          TIP_ISPORUKE,",
+						"          DATUM = STVARNI_DATUM_ISPORUKE,",
+						"          MATERIJAL,",
+						"          KOLICINA,",
+						"          SKLADISNA_LOKACIJA,",
+						"          ODELJAK,",
+						"          SIFRA_RAZLOGA_POVRATA,",
+						"          OPIS_RAZLOGA_POVRATA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRename",
+						"sourceSAP filter(POGON=='MD10' && WBSTK == 'C'",
+						"&& in(['10PZ', '40PZ', '90PZ','10CA', '10NI', 'PRM1', 'PRV1'], SKLADISNA_LOKACIJA)",
+						"&& in(['ZLR', 'ZLX', 'LB', 'ZLA', 'ZLE', 'ZLO', 'ZLF', 'RL', 'Y73', 'YO3', 'YU3', 'YZO1', 'YZU1'], TIP_ISPORUKE)) ~> filterPogonStat",
+						"join1 split(TIP_ISPORUKE=='ZLX' || TIP_ISPORUKE =='ZLR',",
+						"     disjoint: false) ~> split1@(Povrat, Komision)",
+						"select4Col, sourceMat join(MATERIJAL == Sifra_materijala,",
+						"     joinType:'inner',",
+						"     broadcast: 'auto')~> joinMat",
+						"filterRazlogPovrata select(mapColumn(",
+						"          DATUM,",
+						"          MATERIJAL,",
+						"          KOLICINA,",
+						"          ODELJAK,",
+						"          SIFRA_RAZLOGA_POVRATA,",
+						"          OPIS_RAZLOGA_POVRATA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select4Col",
+						"joinMat derive(Kartona = round(KOLICINA /Broj_komada_u_kart, 0, 2),",
+						"          Komada_ostalo = ( KOLICINA /Broj_komada_u_kart - round(KOLICINA /Broj_komada_u_kart, 0, 2) ) * Broj_komada_u_kart) ~> derivedKarton",
+						"filterSkladKolic select(mapColumn(",
+						"          PRIMALAC_ROBE,",
+						"          DATUM,",
+						"          ODELJAK,",
+						"          KOLICINA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3Col",
+						"select3Col aggregate(groupBy(DATUM),",
+						"     Stavka_na_komisionom_nalogu = count(KOLICINA),",
+						"          Komisioni_nalog = countDistinct(PRIMALAC_ROBE)) ~> aggregateCount",
+						"aggregateCount sort(asc(DATUM, true)) ~> sortDatum",
+						"split1@Povrat filter(not (in(['P03', 'N03', 'N05', 'N05'], SIFRA_RAZLOGA_POVRATA))) ~> filterRazlogPovrata",
+						"derivedKarton aggregate(groupBy(DATUM),",
+						"     Povrat_robe_po_kartonu = sum(Kartona),",
+						"          Stavka_na_komisionom_nalogu = sum(Komada_ostalo)) ~> aggregateSum",
+						"aggregateSum sort(asc(DATUM, true)) ~> sortDat",
+						"sortDatum derive(day_of_week = dayOfWeek(DATUM),",
+						"          day_of_month = dayOfMonth(DATUM),",
+						"          day_of_year = dayOfYear(DATUM),",
+						"          week_of_year = weekOfYear(DATUM),",
+						"          year = year(DATUM)) ~> derivedDate",
+						"split1@Komision filter(in(['10PZ', '40PZ', '90PZ'], SKLADISNA_LOKACIJA) ",
+						"&& KOLICINA != 0 ",
+						"&& in(['LB', 'ZLA', 'ZLE', 'ZLO', 'ZLF', 'RL', 'Y73', 'YO3', 'YU3', 'YZO1', 'YZU1'], TIP_ISPORUKE)) ~> filterSkladKolic",
+						"selectRename, selectRenBrend join(selectRename@ODELJAK == selectRenBrend@Odeljak,",
+						"     joinType:'left',",
+						"     broadcast: 'auto')~> join1",
+						"sourceBrend select(mapColumn(",
+						"          Odeljak,",
+						"          Brend = Opis",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRenBrend",
+						"derivedDate sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['komisionAgg.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkKomis",
+						"sortDat sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['povratAgg.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkPovrat",
+						"filterSkladKolic sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['test2preporc.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_sap_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_mat_xls')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_odeljak_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_processed_dmd_sink_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/df_marko_copy1')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_dl_sap_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourceSAP"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_mat_xls",
+								"type": "DatasetReference"
+							},
+							"name": "sourceMat"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_odeljak_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourceBrend"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_sap_csv",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkKomis"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkPovrat"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectRename"
+						},
+						{
+							"name": "filterPogonStat"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "joinMat"
+						},
+						{
+							"name": "select4Col"
+						},
+						{
+							"name": "derivedKarton"
+						},
+						{
+							"name": "select3Col"
+						},
+						{
+							"name": "aggregateCount"
+						},
+						{
+							"name": "sortDatum"
+						},
+						{
+							"name": "filterRazlogPovrata"
+						},
+						{
+							"name": "aggregateSum"
+						},
+						{
+							"name": "sortDat"
+						},
+						{
+							"name": "derivedDate"
+						},
+						{
+							"name": "filterSkladKolic"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "selectRenBrend"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          DOKUMENT_ISPORUKE as integer,",
+						"          STAVKA as integer,",
+						"          OBLAST_PRODAJE as string,",
+						"          WBSTK as string,",
+						"          PRIMALAC_ROBE as long,",
+						"          TIP_ISPORUKE as string,",
+						"          TIP_PROD_DOK as string,",
+						"          DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          DOBAVLJAC as string,",
+						"          PLANIRANI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          STVARNI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          MATERIJAL as integer,",
+						"          KOLICINA as short,",
+						"          SKLADISNA_LOKACIJA as string,",
+						"          POGON as string,",
+						"          ODELJAK as string,",
+						"          SIFRA_RAZLOGA_POVRATA as string,",
+						"          OPIS_RAZLOGA_POVRATA as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceSAP",
+						"source(output(",
+						"          Sifra_materijala as integer,",
+						"          Broj_komada_u_kart as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceMat",
+						"source(output(",
+						"          Odeljak as string,",
+						"          BRAND as short,",
+						"          Opis as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceBrend",
+						"source(output(",
+						"          DOKUMENT_ISPORUKE as string,",
+						"          STAVKA as string,",
+						"          OBLAST_PRODAJE as string,",
+						"          WBSTK as string,",
+						"          PRIMALAC_ROBE as string,",
+						"          TIP_ISPORUKE as string,",
+						"          TIP_PROD_DOK as string,",
+						"          DATUM_ISPORUKE as string,",
+						"          DOBAVLJAC as string,",
+						"          PLANIRANI_DATUM_ISPORUKE as string,",
+						"          STVARNI_DATUM_ISPORUKE as string,",
+						"          MATERIJAL as string,",
+						"          KOLICINA as string,",
+						"          SKLADISNA_LOKACIJA as string,",
+						"          POGON as string,",
+						"          ODELJAK as string,",
+						"          SIFRA_RAZLOGA_POVRATA as string,",
+						"          OPIS_RAZLOGA_POVRATA as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     fileList: true) ~> source1",
+						"filterPogonStat select(mapColumn(",
+						"          PRIMALAC_ROBE,",
+						"          TIP_ISPORUKE,",
+						"          DATUM = STVARNI_DATUM_ISPORUKE,",
+						"          MATERIJAL,",
+						"          KOLICINA,",
+						"          SKLADISNA_LOKACIJA,",
+						"          ODELJAK,",
+						"          SIFRA_RAZLOGA_POVRATA,",
+						"          OPIS_RAZLOGA_POVRATA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRename",
+						"sourceSAP filter(POGON=='MD10' && WBSTK == 'C') ~> filterPogonStat",
+						"join1 split(TIP_ISPORUKE=='ZLX' || TIP_ISPORUKE =='ZLR',",
+						"     disjoint: false) ~> split1@(Povrat, Komision)",
+						"select4Col, sourceMat join(MATERIJAL == Sifra_materijala,",
+						"     joinType:'inner',",
+						"     broadcast: 'auto')~> joinMat",
+						"filterRazlogPovrata select(mapColumn(",
+						"          DATUM,",
+						"          MATERIJAL,",
+						"          KOLICINA,",
+						"          ODELJAK,",
+						"          SIFRA_RAZLOGA_POVRATA,",
+						"          OPIS_RAZLOGA_POVRATA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select4Col",
+						"joinMat derive(Kartona = round(KOLICINA /Broj_komada_u_kart, 0, 2),",
+						"          Komada_ostalo = ( KOLICINA /Broj_komada_u_kart - round(KOLICINA /Broj_komada_u_kart, 0, 2) ) * Broj_komada_u_kart) ~> derivedKarton",
+						"filterSkladKolic select(mapColumn(",
+						"          PRIMALAC_ROBE,",
+						"          DATUM,",
+						"          ODELJAK,",
+						"          KOLICINA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3Col",
+						"select3Col aggregate(groupBy(DATUM),",
+						"     Stavka_na_komisionom_nalogu = count(KOLICINA),",
+						"          Komisioni_nalog = countDistinct(PRIMALAC_ROBE)) ~> aggregateCount",
+						"aggregateCount sort(asc(DATUM, true)) ~> sortDatum",
+						"split1@Povrat filter(not (in(['P03', 'N03', 'N05', 'N05'], SIFRA_RAZLOGA_POVRATA))) ~> filterRazlogPovrata",
+						"derivedKarton aggregate(groupBy(DATUM),",
+						"     Povrat_robe_po_kartonu = sum(Kartona),",
+						"          Stavka_na_komisionom_nalogu = sum(Komada_ostalo)) ~> aggregateSum",
+						"aggregateSum sort(asc(DATUM, true)) ~> sortDat",
+						"sortDatum derive(day_of_week = dayOfWeek(DATUM),",
+						"          day_of_month = dayOfMonth(DATUM),",
+						"          day_of_year = dayOfYear(DATUM),",
+						"          week_of_year = weekOfYear(DATUM),",
+						"          year = year(DATUM)) ~> derivedDate",
+						"split1@Komision filter(not (in(['PRV1', 'PRV2', 'PRV3'], SKLADISNA_LOKACIJA)) && KOLICINA != 0) ~> filterSkladKolic",
+						"selectRename, selectRenBrend join(selectRename@ODELJAK == selectRenBrend@Odeljak,",
+						"     joinType:'inner',",
+						"     broadcast: 'auto')~> join1",
+						"sourceBrend select(mapColumn(",
+						"          Odeljak,",
+						"          Brend = Opis",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRenBrend",
+						"derivedDate sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['komisionAgg.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkKomis",
+						"sortDat sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['povratAgg.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkPovrat"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_sap_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_mat_xls')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_odeljak_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_processed_dmd_sink_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/df_marko_copy2')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_dl_sap_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourceSAP"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_mat_xls",
+								"type": "DatasetReference"
+							},
+							"name": "sourceMat"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_odeljak_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourceBrend"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkKomis"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sinkPovrat"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_dl_processed_dmd_sink_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "selectRename"
+						},
+						{
+							"name": "filterPogonStat"
+						},
+						{
+							"name": "split1"
+						},
+						{
+							"name": "joinMat"
+						},
+						{
+							"name": "select4Col"
+						},
+						{
+							"name": "derivedKarton"
+						},
+						{
+							"name": "select3Col"
+						},
+						{
+							"name": "aggregateCount"
+						},
+						{
+							"name": "sortDatum"
+						},
+						{
+							"name": "filterRazlogPovrata"
+						},
+						{
+							"name": "aggregateSum"
+						},
+						{
+							"name": "sortDat"
+						},
+						{
+							"name": "derivedDate"
+						},
+						{
+							"name": "filterSkladKolic"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "selectRenBrend"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          DOKUMENT_ISPORUKE as integer,",
+						"          STAVKA as integer,",
+						"          OBLAST_PRODAJE as string,",
+						"          WBSTK as string,",
+						"          PRIMALAC_ROBE as long,",
+						"          TIP_ISPORUKE as string,",
+						"          TIP_PROD_DOK as string,",
+						"          DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          DOBAVLJAC as string,",
+						"          PLANIRANI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          STVARNI_DATUM_ISPORUKE as date 'yyyyMMdd',",
+						"          MATERIJAL as integer,",
+						"          KOLICINA as short,",
+						"          SKLADISNA_LOKACIJA as string,",
+						"          POGON as string,",
+						"          ODELJAK as string,",
+						"          SIFRA_RAZLOGA_POVRATA as string,",
+						"          OPIS_RAZLOGA_POVRATA as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceSAP",
+						"source(output(",
+						"          Sifra_materijala as integer,",
+						"          Broj_komada_u_kart as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceMat",
+						"source(output(",
+						"          Odeljak as string,",
+						"          BRAND as short,",
+						"          Opis as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceBrend",
+						"filterPogonStat select(mapColumn(",
+						"          PRIMALAC_ROBE,",
+						"          TIP_ISPORUKE,",
+						"          DATUM = STVARNI_DATUM_ISPORUKE,",
+						"          MATERIJAL,",
+						"          KOLICINA,",
+						"          SKLADISNA_LOKACIJA,",
+						"          ODELJAK,",
+						"          SIFRA_RAZLOGA_POVRATA,",
+						"          OPIS_RAZLOGA_POVRATA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRename",
+						"sourceSAP filter(POGON=='MD10' && WBSTK == 'C'",
+						"&& in(['10PZ', '40PZ', '90PZ','10CA', '10NI', 'PRM1', 'PRV1'], SKLADISNA_LOKACIJA)",
+						"&& in(['ZLR', 'ZLX', 'LB', 'ZLA', 'ZLE', 'ZLO', 'ZLF', 'RL', 'Y73', 'YO3', 'YU3', 'YZO1', 'YZU1'], TIP_ISPORUKE)) ~> filterPogonStat",
+						"join1 split(TIP_ISPORUKE=='ZLX' || TIP_ISPORUKE =='ZLR',",
+						"     disjoint: false) ~> split1@(Povrat, Komision)",
+						"select4Col, sourceMat join(MATERIJAL == Sifra_materijala,",
+						"     joinType:'inner',",
+						"     broadcast: 'auto')~> joinMat",
+						"filterRazlogPovrata select(mapColumn(",
+						"          DATUM,",
+						"          MATERIJAL,",
+						"          KOLICINA,",
+						"          ODELJAK,",
+						"          SIFRA_RAZLOGA_POVRATA,",
+						"          OPIS_RAZLOGA_POVRATA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select4Col",
+						"joinMat derive(Kartona = round(KOLICINA /Broj_komada_u_kart, 0, 2),",
+						"          Komada_ostalo = ( KOLICINA /Broj_komada_u_kart - round(KOLICINA /Broj_komada_u_kart, 0, 2) ) * Broj_komada_u_kart) ~> derivedKarton",
+						"filterSkladKolic select(mapColumn(",
+						"          PRIMALAC_ROBE,",
+						"          DATUM,",
+						"          ODELJAK,",
+						"          KOLICINA",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3Col",
+						"select3Col aggregate(groupBy(DATUM),",
+						"     Stavka_na_komisionom_nalogu = count(KOLICINA),",
+						"          Komisioni_nalog = countDistinct(PRIMALAC_ROBE)) ~> aggregateCount",
+						"aggregateCount sort(asc(DATUM, true)) ~> sortDatum",
+						"split1@Povrat filter(not (in(['P03', 'N03', 'N05', 'N05'], SIFRA_RAZLOGA_POVRATA))) ~> filterRazlogPovrata",
+						"derivedKarton aggregate(groupBy(DATUM),",
+						"     Povrat_robe_po_kartonu = sum(Kartona),",
+						"          Stavka_na_komisionom_nalogu = sum(Komada_ostalo)) ~> aggregateSum",
+						"aggregateSum sort(asc(DATUM, true)) ~> sortDat",
+						"sortDatum derive(day_of_week = dayOfWeek(DATUM),",
+						"          day_of_month = dayOfMonth(DATUM),",
+						"          day_of_year = dayOfYear(DATUM),",
+						"          week_of_year = weekOfYear(DATUM),",
+						"          year = year(DATUM)) ~> derivedDate",
+						"split1@Komision filter(in(['10PZ', '40PZ', '90PZ'], SKLADISNA_LOKACIJA) ",
+						"&& KOLICINA != 0 ",
+						"&& in(['LB', 'ZLA', 'ZLE', 'ZLO', 'ZLF', 'RL', 'Y73', 'YO3', 'YU3', 'YZO1', 'YZU1'], TIP_ISPORUKE)) ~> filterSkladKolic",
+						"selectRename, selectRenBrend join(selectRename@ODELJAK == selectRenBrend@Odeljak,",
+						"     joinType:'left',",
+						"     broadcast: 'auto')~> join1",
+						"sourceBrend select(mapColumn(",
+						"          Odeljak,",
+						"          Brend = Opis",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> selectRenBrend",
+						"derivedDate sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['komisionAgg.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkKomis",
+						"sortDat sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['povratAgg.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sinkPovrat",
+						"filterSkladKolic sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     partitionFileNames:['test2preporc.csv'],",
+						"     umask: 0022,",
+						"     preCommands: [],",
+						"     postCommands: [],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_sap_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_mat_xls')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_odeljak_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_processed_dmd_sink_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script DMD 2020')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://dlsynapsedts.dfs.core.windows.net/row/dmd/SAP/DMD_2020.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook ML Model 2 bckp')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Archive"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkSmall",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "7e2bc7da-84a2-4239-ab49-68ab457f91b4"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1",
+						"state": {
+							"050c61c6-a496-4450-8827-4e4bcf8449ab": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "2021-07-23",
+												"1": "1254"
+											},
+											{
+												"0": "2020-03-02",
+												"1": "2554"
+											},
+											{
+												"0": "2022-02-05",
+												"1": "367"
+											},
+											{
+												"0": "2020-06-24",
+												"1": "1145"
+											},
+											{
+												"0": "2019-07-06",
+												"1": "730"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "DATUM",
+												"type": "date"
+											},
+											{
+												"key": "1",
+												"name": "STAVKE_NA_KOMIS_NALOGU",
+												"type": "int"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala"
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "sum",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"1"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							},
+							"4c8c1409-a9c9-40b2-9e56-d5037802ce59": {
+								"type": "Synapse.DataFrame",
+								"sync_state": {
+									"table": {
+										"rows": [
+											{
+												"0": "01",
+												"1": "BDF",
+												"2": "Nivea"
+											},
+											{
+												"0": "02",
+												"1": "Ferrero",
+												"2": "Ferrero"
+											},
+											{
+												"0": "04",
+												"1": "Johnson wax",
+												"2": "Johnson Wax"
+											},
+											{
+												"0": "06",
+												"1": "Diageo",
+												"2": "Diageo program"
+											},
+											{
+												"0": "09",
+												"1": "BDF",
+												"2": "Eucerin"
+											},
+											{
+												"0": "17",
+												"1": "BDF",
+												"2": "Hansaplast"
+											},
+											{
+												"0": "60",
+												"1": "Tikves",
+												"2": "Tikve? classic"
+											},
+											{
+												"0": "61",
+												"1": "Tikves",
+												"2": "Tikve? premium"
+											},
+											{
+												"0": "62",
+												"1": "Tikves",
+												"2": "Tikve? rakija"
+											},
+											{
+												"0": "63",
+												"1": "Tikves",
+												"2": "Tikve? standard"
+											}
+										],
+										"schema": [
+											{
+												"key": "0",
+												"name": "Odeljak",
+												"type": "string"
+											},
+											{
+												"key": "1",
+												"name": "Brend",
+												"type": "string"
+											},
+											{
+												"key": "2",
+												"name": "Opis",
+												"type": "string"
+											}
+										],
+										"truncated": false
+									},
+									"isSummary": false,
+									"language": "scala"
+								},
+								"persist_state": {
+									"view": {
+										"type": "details",
+										"chartOptions": {
+											"chartType": "bar",
+											"aggregationType": "count",
+											"categoryFieldKeys": [
+												"0"
+											],
+											"seriesFieldKeys": [
+												"0"
+											],
+											"isStacked": false
+										}
+									}
+								}
+							}
+						}
+					},
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws/bigDataPools/SparkSmall",
+						"name": "SparkSmall",
+						"type": "Spark",
+						"endpoint": "https://synapsedtsws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmall",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Import library"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import pandas as pd\r\n",
+							"import numpy as np\r\n",
+							"\r\n",
+							"from dateutil.parser import parse \r\n",
+							"import matplotlib as mpl\r\n",
+							"import matplotlib.pyplot as plt\r\n",
+							"import matplotlib.pyplot as pyplot\r\n",
+							"import seaborn as sns\r\n",
+							"\r\n",
+							"from datetime import datetime\r\n",
+							"\r\n",
+							"import warnings\r\n",
+							"warnings.simplefilter(\"ignore\")\r\n",
+							"\r\n",
+							"from datetime import datetime\r\n",
+							"import time\r\n",
+							"import math\r\n",
+							"\r\n",
+							"from pandas.plotting import autocorrelation_plot\r\n",
+							"\r\n",
+							"# from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error   # metrics\r\n",
+							"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
+							"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
+							"# from statsmodels.tsa.ar_model import AR\r\n",
+							"# from statsmodels.tsa.arima_model import ARIMA\r\n",
+							"from statsmodels.tsa.statespace.sarimax import SARIMAX\r\n",
+							"from statsmodels.tsa.ar_model import AutoReg\r\n",
+							"from statsmodels.tsa.arima.model import ARIMA\r\n",
+							"# import pmdarima as pm\r\n",
+							"\r\n",
+							"\r\n",
+							"plt.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
+							"print('jes importedddd je :D')"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Access Azure SQL database "
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"jdbcHostname = \"srv-db-sql-dmd.database.windows.net\"\r\n",
+							"jdbcDatabase = \"db-sql-dmd\"\r\n",
+							"jdbcPort = \"1433\"\r\n",
+							"username = \"marko\"\r\n",
+							"password = \"5Avramovic!\"\r\n",
+							"jdbcUrl = \"jdbc:sqlserver://{0}:{1};database={2}\".format(jdbcHostname, jdbcPort, jdbcDatabase)\r\n",
+							"connectionProperties = {\r\n",
+							"    \"user\" : username,\r\n",
+							"    \"password\" : password,\r\n",
+							"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
+							"}\r\n",
+							"pushdown_query = \"(SELECT top(5) DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionOdeljAggFinal WHERE BREND = 'Ferrero') Ferrero\"\r\n",
+							"df_ferrero = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+							"display(df_ferrero)\r\n",
+							"\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 2
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Access Data Lake Gen 2 using secret key - not working"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"spark.conf.set(\"fs.azure.account.auth.type\", \"SAS\")\r\n",
+							"spark.conf.set(\"fs.azure.sas.token.provider.type\", \"com.microsoft.azure.synapse.tokenlibrary.AkvBasedSASProvider\")\r\n",
+							"spark.conf.set(\"spark.storage.synapse.akv\", \"https://dtsmlws9956541205.vault.azure.net/\")\r\n",
+							"spark.conf.set(\"spark.storage.akv.secret\", \"jPsmUFd82epLoYrQVfsPilAsPmFd0y6EJ8TEzJzIDZIFU39eZqV2tfBR73ATfCeSaJp2DMJrYDuWEUwyojKKuw==\")\r\n",
+							"\r\n",
+							"df = spark.read.csv('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/SAP/DMD_2020.csv')\r\n",
+							"# df = spark.read.csv('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd')\r\n",
+							"\r\n",
+							"\r\n",
+							"display(df.limit(10))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from notebookutils import mssparkutils\r\n",
+							"# mssparkutils.credentials.help()\r\n",
+							"accountKey = mssparkutils.credentials.getSecret('keywaultdts', 'secretdts')"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from notebookutils import mssparkutils  \r\n",
+							"mssparkutils.fs.mount(\r\n",
+							"    \"abfss://row@dlsynapsedts.dfs.core.windows.net\", #ADLS GEN 2 PATH\r\n",
+							"    \"/test2\", #Mount Point Name\r\n",
+							"    { \"accountKey\" : accountKey}\r\n",
+							")"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Access Blob storage using AccountKey - pression issue"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from notebookutils import mssparkutils  \r\n",
+							"mssparkutils.fs.mount(\r\n",
+							"    \"abfss://row@dlsynapsedts.dfs.core.windows.net\", #ADLS GEN 2 PATH\r\n",
+							"    \"/test\", #Mount Point Name\r\n",
+							"    { \"accountKey\" : \"jPsmUFd82epLoYrQVfsPilAsPmFd0y6EJ8TEzJzIDZIFU39eZqV2tfBR73ATfCeSaJp2DMJrYDuWEUwyojKKuw==\"}\r\n",
+							")\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"jobId = mssparkutils.env.getJobId()\r\n",
+							"df = spark.read.load('synfs:/' + jobId + '/test/dmd/Odeljak/Odeljak_fix.csv', format = 'csv')\r\n",
+							"display(df)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 5
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Direct access from Data Lake Gen 2 - permision issue"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/Odeljak/Odeljak_fix.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							", header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df.write.mode('overwrite').option('header', 'true').csv('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/')\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Output using Spark - Store output on Blob Storage - work"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Output using Spark\r\n",
+							"folder_name = \"fererro\"\r\n",
+							"(df\r\n",
+							" .coalesce(1)\r\n",
+							" .write\r\n",
+							" .mode(\"overwrite\")\r\n",
+							" .option(\"header\", \"true\")\r\n",
+							" .format(\"com.databricks.spark.csv\")\r\n",
+							" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Library issue"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error       #, mean_absolute_percentage_error\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from sklearn.metrics import  mean_absolute_percentage_error\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import sklearn\r\n",
+							"sklearn.show_versions()"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"pip install -U scikit-learn\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Evaluating the models with data - create function"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def metric_table(test, predictions):\r\n",
+							"    \r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"  model_r2, model_RMSE, model_MAE, model_MSE, model_MAPE, model_Adj_R2 = [], [], [], [], [], []\r\n",
+							"\r\n",
+							"\r\n",
+							"  r2 = r2_score(test, predictions)\r\n",
+							"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
+							"  mae = mean_absolute_error(test, predictions)\r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"#   mape = mean_absolute_percentage_error(test, predictions)\r\n",
+							"\r\n",
+							"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
+							"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
+							"\r\n",
+							"  model_r2.append(r2)\r\n",
+							"  model_RMSE.append(rmse)\r\n",
+							"  model_MAE.append(mae)\r\n",
+							"  model_MSE.append(mse)\r\n",
+							"#   model_MAPE.append(mape)\r\n",
+							"  model_Adj_R2.append(adj_r2)\r\n",
+							"\r\n",
+							"\r\n",
+							"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE})  #, \"MAPE\": model_MAPE})\r\n",
+							"  df_result = round(df_result,3)\r\n",
+							"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+							"  df_result\r\n",
+							"  return df_result"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 50
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Import dataset"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# set test set\r\n",
+							"n = 15"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 51
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"dataset = pd.read_csv('https://raw.githubusercontent.com/marko2212/test_data/main/DMD_dataset.csv', header=0, parse_dates=[0], dayfirst=True)\r\n",
+							"df = dataset\r\n",
+							"# df.index = df.iloc[:, 0]   \r\n",
+							"df = df[df['DATUM'].dt.weekday != 6]         # removing sunday (6) from dummy df_date\r\n",
+							"df = df.reset_index(drop=True)\r\n",
+							"# df = features\r\n",
+							"df"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 52
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Test-Train Split"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"train, test = df.iloc[:-n, -1], df.iloc[-n:, -1]                                # values\r\n",
+							"test_date = dataset.iloc[-n:, 0:1]\r\n",
+							"train"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"data = train\r\n",
+							"predict =[]\r\n",
+							"for t in test:\r\n",
+							"    model = ARIMA(data, order=(5,1,1))\r\n",
+							"    model_fit = model.fit()\r\n",
+							"    y = model_fit.forecast()\r\n",
+							"    print(y[0][0])\r\n",
+							"    # print(y)                # for now model.ARIMA\r\n",
+							"    predict.append(y[0][0])\r\n",
+							"    # predict.append(y)         # for now model.ARIMA\r\n",
+							"    data = np.append(data, t)\r\n",
+							"    data = pd.Series(data)\r\n",
+							"# predict"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import pandas as pd\r\n",
+							"import numpy as np\r\n",
+							"import matplotlib.pyplot as plt\r\n",
+							"\r\n",
+							"# Load AutoReg class from statsmodels.tsa.ar_model module\r\n",
+							"from statsmodels.tsa.ar_model import AutoReg\r\n",
+							"# Load and plot the time-series data\r\n",
+							"#\r\n",
+							"url='https://raw.githubusercontent.com/jenfly/opsd/master/opsd_germany_daily.csv'\r\n",
+							"df = pd.read_csv(url,sep=\",\")\r\n",
+							"df['Consumption'].plot()"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#\r\n",
+							"# Create training and test data\r\n",
+							"#\r\n",
+							"train_data = df['Consumption'][:len(df)-100]\r\n",
+							"test_data = df['Consumption'][len(df)-100:]\r\n",
+							"#\r\n",
+							"# Instantiate and fit the AR model with training data\r\n",
+							"#\r\n",
+							"ar_model = AutoReg(train_data, lags=8).fit()\r\n",
+							"#\r\n",
+							"# Print Summary\r\n",
+							"#\r\n",
+							"print(ar_model.summary())"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"test_data\r\n",
+							"test"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"model = ARIMA(train, order=(5,1,1))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# from statsmodels.tsa.ar_model import AR       # deprecated\r\n",
+							"from statsmodels.tsa.ar_model import AutoReg\r\n",
+							"# statsmodels.tsa.AR has been deprecated in favor of statsmodels.tsa.AutoReg and\r\n",
+							"# statsmodels.tsa.SARIMAX.\r\n",
+							"# model = AR(train)                           # deprecated\r\n",
+							"model = AutoReg(train, lags=21)\r\n",
+							"model_fit = model.fit()\r\n",
+							"model_fit\r\n",
+							"# model_fit.summary()"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"model_fit.forecast().values[0]"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"data = train\r\n",
+							"predict =[]\r\n",
+							"for t in test:\r\n",
+							"    model = ARIMA(data, order=(5,1,1))\r\n",
+							"    model_fit = model.fit()\r\n",
+							"    y = model_fit.forecast()\r\n",
+							"    # print(y[0][0])\r\n",
+							"    print(y.values[0])\r\n",
+							"    # print(y)                # for now model.ARIMA\r\n",
+							"    # predict.append(y[0][0])\r\n",
+							"    predict.append(y.values[0])\r\n",
+							"    # predict.append(y)         # for now model.ARIMA\r\n",
+							"    data = np.append(data, t)\r\n",
+							"    data = pd.Series(data)\r\n",
+							"# predict"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 13
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"pyplot.figure(figsize=(8, 5), dpi=80)\r\n",
+							"\r\n",
+							"pyplot.plot(test.values)\r\n",
+							"pyplot.plot(predict, color='red')\r\n",
+							"pyplot.show()\r\n",
+							"metric_table(test, predict)             # metric table"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 32
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Regression"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"\r\n",
+							"y = dataset.iloc[:, -1].values\r\n",
+							"\r\n",
+							"# Select all types of numerical data\r\n",
+							"numerics = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64'] \r\n",
+							"numerical_df = dataset.select_dtypes(include=numerics)\r\n",
+							"X = numerical_df.iloc[:, :-1]\r\n",
+							"d = dataset\r\n",
+							"d['day']             = d['DATUM'].dt.day\r\n",
+							"d[['day']]\r\n",
+							"X = d[['day']]\r\n",
+							"y"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from sklearn.model_selection import train_test_split\r\n",
+							"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 0)\r\n",
+							"X_train"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 68
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from sklearn.preprocessing import StandardScaler\r\n",
+							"sc = StandardScaler()\r\n",
+							"X_train = sc.fit_transform(X_train)\r\n",
+							"X_test = sc.transform(X_test)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 69
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Evaluating the models with data using this function\r\n",
+							"\r\n",
+							"model_r2, model_RMSE, model_MAE, model_MSE = [], [], [], []\r\n",
+							"\r\n",
+							"def evaluate(model):\r\n",
+							"    model.fit(X_train,y_train)\r\n",
+							"    y_pred=model.predict(X_test) \r\n",
+							"    \r\n",
+							"    # printing the model name and scores\r\n",
+							"    r2 = r2_score(y_test, y_pred)\r\n",
+							"    rmse = np.sqrt(mean_squared_error(y_test, y_pred))\r\n",
+							"    mae = mean_absolute_error(y_test, y_pred)\r\n",
+							"    mse = mean_squared_error(y_test, y_pred)\r\n",
+							"    print(\"Model name:------->    \",model)\r\n",
+							"    print(\"R2   score:------->\",round(r2,2))\r\n",
+							"    print('RMSE score:------->',round(rmse,2))\r\n",
+							"    print('MAE  score:------->',round(mae,2))\r\n",
+							"    print('MSE  score:------->',round(mse,2))\r\n",
+							"    print(\"<<<<-------------------------------------------------------------------->>>>\")\r\n",
+							"    model_r2.append(r2)\r\n",
+							"    model_RMSE.append(rmse)\r\n",
+							"    model_MAE.append(mae)\r\n",
+							"    model_MSE.append(mse)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 70
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Initialize the models\r\n",
+							"lir = LinearRegression()                                                                      # linear regression\r\n",
+							"pr = LinearRegression()                                                                       # polynomial regression\r\n",
+							"logr = LogisticRegression()\r\n",
+							"dtr = DecisionTreeRegressor(random_state = 0)                                                 # decision tree regression\r\n",
+							"rfr = RandomForestRegressor(n_estimators = 100, random_state = 0)                             # random forest regression\r\n",
+							"svr = SVR(kernel = 'rbf')                                                                     # support vector regression\r\n",
+							"rr = Ridge(alpha=1.0)                                                                         # ridge regression\r\n",
+							"lsr = Lasso(alpha=2.0, max_iter = 10000)                                                      # lasso regression\r\n",
+							"knn = neighbors.KNeighborsRegressor()                                                         # KNeighbors regression\r\n",
+							"xgb = XGBRegressor()                                                                          # XGBRegressor\r\n",
+							"# xgb = XGBRegressor(n_estimators=1000, max_depth=7, eta=0.1, subsample=0.7, colsample_bytree=0.8)\r\n",
+							"# xgb = XGBClassifier(learning_rate=0.1,n_estimators=500,random_state=42)\r\n",
+							"\r\n",
+							"poly_reg = PolynomialFeatures(degree = 4)\r\n",
+							"X_poly = poly_reg.fit_transform(X_train)\r\n",
+							"\r\n",
+							"models=[lir, pr,logr,  dtr, rfr, svr, rr, lsr, knn, xgb] #create a list of models\r\n",
+							"model_names = ['Linear Regression', 'Polynomial Regression','Logistic Regression', 'Decision Tree Regressoion', 'Random Forest Regression',\r\n",
+							"               'Support Vector Regression', 'Ridge regression', 'Lasso regression', 'KNeighbors regression', 'XGB Regression']\r\n",
+							"\r\n",
+							"\r\n",
+							"for model in models:\r\n",
+							"    evaluate(model)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 71
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# sort models by r2\r\n",
+							"df_result = pd.DataFrame({\"R2\":model_r2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE, \"ML Models\": model_names})\r\n",
+							"df_result = round(df_result,3)\r\n",
+							"df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+							"df_result.style\\\r\n",
+							"    .background_gradient(\"Blues\",  subset=['R2'])\\\r\n",
+							"    .background_gradient(\"Blues_r\",  subset=['RMSE', 'MAE', 'MSE'])"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from sklearn.ensemble import RandomForestRegressor\r\n",
+							"regressor = RandomForestRegressor(n_estimators = 100, random_state = 0)\r\n",
+							"regressor.fit(X_train, y_train)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 72
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"y_pred = rfr.predict(X_test)\r\n",
+							"np.set_printoptions(precision=2)\r\n",
+							"\r\n",
+							"df_result = pd.DataFrame({\"predicted\":np.round(y_pred), \"real\": y_test, \"diff\": abs(np.round(y_pred) - y_test)})\r\n",
+							"df_result['diff%'] = df_result['diff'] / df_result['real']*100 \r\n",
+							"# df_result = df_result.astype(int)\r\n",
+							"# df_result\r\n",
+							"# df_result[\"diff%\"].mean()\r\n",
+							"# df_result[\"real\"].mean()\r\n",
+							"# df_result\r\n",
+							"# df_result['diff_2'] = df_result['diff'] *df_result['diff']\r\n",
+							"# df_result['diff_2'].sum()/25\r\n",
+							"# df_result[['diff']].sum()/25\r\n",
+							"# df_result['diff'].total()\r\n",
+							"df_result"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 73
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"plt.figure(figsize=(8,5))\r\n",
+							"# plt.figure(figsize=(20,7))\r\n",
+							"plt.plot(y_pred, linestyle='-', marker='o', label='predicted')\r\n",
+							"plt.plot(y_test,  label='real')\r\n",
+							"plt.title('Real vs Predicted')\r\n",
+							"# plt.grid(axis='y')\r\n",
+							"plt.legend()\r\n",
+							"plt.show()"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 76
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"pip install -U scikit-learn\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 77
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook ML Model 2')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkSmall",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "4da85a28-84ca-4f2e-8631-1d10f25ce68d"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws/bigDataPools/SparkSmall",
+						"name": "SparkSmall",
+						"type": "Spark",
+						"endpoint": "https://synapsedtsws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmall",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Import library"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import numpy as np\r\n",
+							"import pandas as pd\r\n",
+							"from pandas.plotting import autocorrelation_plot\r\n",
+							"import matplotlib as mpl\r\n",
+							"import matplotlib.pyplot as pyplot\r\n",
+							"import matplotlib.pyplot as plt\r\n",
+							"import seaborn as sns\r\n",
+							"\r\n",
+							"from datetime import datetime, timedelta\r\n",
+							"import time\r\n",
+							"from dateutil.parser import parse \r\n",
+							"import math\r\n",
+							"\r\n",
+							"import warnings\r\n",
+							"warnings.simplefilter(\"ignore\")\r\n",
+							"\r\n",
+							"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error   # metrics\r\n",
+							"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
+							"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
+							"from statsmodels.tsa.statespace.sarimax import SARIMAX\r\n",
+							"from statsmodels.tsa.ar_model import AutoReg\r\n",
+							"from statsmodels.tsa.arima.model import ARIMA\r\n",
+							"import pmdarima as pm\r\n",
+							"\r\n",
+							"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
+							"print('lib are imported')"
+						],
+						"outputs": [],
+						"execution_count": 55
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Evaluating the models with data - create function"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def metric_table(test, predictions):\r\n",
+							"    \r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"  model_r2, model_RMSE, model_MAE, model_MSE, model_Adj_R2 = [], [], [], [], []\r\n",
+							"\r\n",
+							"\r\n",
+							"  r2 = r2_score(test, predictions)\r\n",
+							"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
+							"  mae = mean_absolute_error(test, predictions)\r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"  # mape = mean_absolute_percentage_error(test, predictions)\r\n",
+							"\r\n",
+							"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
+							"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
+							"\r\n",
+							"  model_r2.append(r2)\r\n",
+							"  model_RMSE.append(rmse)\r\n",
+							"  model_MAE.append(mae)\r\n",
+							"  model_MSE.append(mse)\r\n",
+							"  # model_MAPE.append(mape)\r\n",
+							"  model_Adj_R2.append(adj_r2)\r\n",
+							"\r\n",
+							"\r\n",
+							"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE})\r\n",
+							"  df_result = round(df_result,3)\r\n",
+							"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+							"  df_result\r\n",
+							"  return df_result"
+						],
+						"outputs": [],
+						"execution_count": 56
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Create function that add all missing date"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def add_all_date(df, whitout_sun=0):\r\n",
+							"  rng = pd.date_range(start = df.index[0], end =df.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
+							"  df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
+							"  if whitout_sun == 1:\r\n",
+							"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
+							"  df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
+							"  df = df[df.index.weekday != 6]                                                # removing sunday (6) from df\r\n",
+							"  df = df_date_temp.join(df)                                                    # left join dataset on dummy date\r\n",
+							"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
+							"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
+							"  return df"
+						],
+						"outputs": [],
+						"execution_count": 57
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Panda to spark function"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.types import *\r\n",
+							"\r\n",
+							"# Auxiliar functions\r\n",
+							"def equivalent_type(f):\r\n",
+							"    if f == 'datetime64[ns]': return TimestampType()\r\n",
+							"    elif f == 'int64': return LongType()\r\n",
+							"    elif f == 'int32': return IntegerType()\r\n",
+							"    elif f == 'float64': return DoubleType()\r\n",
+							"    elif f == 'float32': return FloatType()\r\n",
+							"    else: return StringType()\r\n",
+							"\r\n",
+							"def define_structure(string, format_type):\r\n",
+							"    try: typo = equivalent_type(format_type)\r\n",
+							"    except: typo = StringType()\r\n",
+							"    return StructField(string, typo)\r\n",
+							"\r\n",
+							"# Given pandas dataframe, it will return a spark's dataframe.\r\n",
+							"def pandas_to_spark(pandas_df):\r\n",
+							"    columns = list(pandas_df.columns)\r\n",
+							"    types = list(pandas_df.dtypes)\r\n",
+							"    struct_list = []\r\n",
+							"    for column, typo in zip(columns, types): \r\n",
+							"      struct_list.append(define_structure(column, typo))\r\n",
+							"    p_schema = StructType(struct_list)\r\n",
+							"    return sqlContext.createDataFrame(pandas_df, p_schema)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Import dataset"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": true,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# credentials\r\n",
+							"jdbcHostname = \"srv-db-sql-dmd.database.windows.net\"\r\n",
+							"jdbcDatabase = \"db-sql-dmd\"\r\n",
+							"jdbcPort = \"1433\"\r\n",
+							"username = \"marko\"\r\n",
+							"password = \"5Avramovic!\"\r\n",
+							"jdbcUrl = \"jdbc:sqlserver://{0}:{1};database={2}\".format(jdbcHostname, jdbcPort, jdbcDatabase)\r\n",
+							"connectionProperties = {\r\n",
+							"    \"user\" : username,\r\n",
+							"    \"password\" : password,\r\n",
+							"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
+							"}"
+						],
+						"outputs": [],
+						"execution_count": 58
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Loop brends"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# connect to database with credentials, execut SQL \r\n",
+							"pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ) Grupno\"\r\n",
+							"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+							"# display(df_spark)\r\n",
+							"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+							"\r\n",
+							"df.set_index('DATUM', inplace=True)\r\n",
+							"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+							"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+							"df"
+						],
+						"outputs": [],
+						"execution_count": 59
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Train ARIMA model and prediction"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"n = 19\r\n",
+							"\r\n",
+							"order = [28,0,0]\r\n",
+							"model = ARIMA(df, order=(order))\r\n",
+							"model_fit = model.fit()\r\n",
+							"prediction = model_fit.forecast(n)\r\n",
+							"\r\n",
+							"if not isinstance(prediction.index[0], datetime):               # ako index nije datum pretvori ga u datum\r\n",
+							"  prediction = prediction.to_frame().set_index(test.index)      # move series to dataframe and set index as test datum\r\n",
+							"\r\n",
+							"# korekcije\r\n",
+							"prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
+							"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
+							"prediction"
+						],
+						"outputs": [],
+						"execution_count": 62
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Graph"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"pyplot.figure(figsize=(18, 6), dpi=80)       # adjust graph size\r\n",
+							"pyplot.plot(prediction, color='red', label='prediction')\r\n",
+							"pyplot.legend(loc=\"upper left\")\r\n",
+							"pyplot.show()"
+						],
+						"outputs": [],
+						"execution_count": 63
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"a = pandas_to_spark(prediction)\r\n",
+							"display(a)"
+						],
+						"outputs": [],
+						"execution_count": 67
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"prediction2 = prediction\r\n",
+							"prediction2['DATUM'] = prediction2.index\r\n",
+							"prediction2 = prediction2[['DATUM', 'predicted_mean']]\r\n",
+							"prediction2"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# Output using Spark\r\n",
+							"folder_name = \"Fererro\"\r\n",
+							"(pandas_to_spark(prediction2)\r\n",
+							" .coalesce(1)\r\n",
+							" .write\r\n",
+							" .mode(\"overwrite\")\r\n",
+							" .option(\"header\", \"true\")\r\n",
+							" .format(\"com.databricks.spark.csv\")\r\n",
+							" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/Komision_stavke/' + folder_name))"
+						],
+						"outputs": [],
+						"execution_count": 86
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook ML Model 2_bckp2')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Archive"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkSmall",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "b594705c-cde8-40c5-acf8-0b3283f4a9f8"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws/bigDataPools/SparkSmall",
+						"name": "SparkSmall",
+						"type": "Spark",
+						"endpoint": "https://synapsedtsws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmall",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"## Import library"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import numpy as np\r\n",
+							"import pandas as pd\r\n",
+							"from pandas.plotting import autocorrelation_plot\r\n",
+							"import matplotlib as mpl\r\n",
+							"import matplotlib.pyplot as pyplot\r\n",
+							"import matplotlib.pyplot as plt\r\n",
+							"import seaborn as sns\r\n",
+							"\r\n",
+							"from datetime import datetime, timedelta\r\n",
+							"import time\r\n",
+							"from dateutil.parser import parse \r\n",
+							"import math\r\n",
+							"\r\n",
+							"import warnings\r\n",
+							"warnings.simplefilter(\"ignore\")\r\n",
+							"\r\n",
+							"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error   # metrics\r\n",
+							"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
+							"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
+							"from statsmodels.tsa.statespace.sarimax import SARIMAX\r\n",
+							"from statsmodels.tsa.ar_model import AutoReg\r\n",
+							"from statsmodels.tsa.arima.model import ARIMA\r\n",
+							"import pmdarima as pm\r\n",
+							"\r\n",
+							"from sklearn.ensemble import RandomForestRegressor\r\n",
+							"from sklearn.linear_model import LinearRegression\r\n",
+							"from sklearn.preprocessing import PolynomialFeatures\r\n",
+							"from sklearn.tree import DecisionTreeRegressor\r\n",
+							"from sklearn.model_selection import cross_val_score\r\n",
+							"from sklearn.svm import SVR\r\n",
+							"from sklearn.linear_model import LogisticRegression\r\n",
+							"from sklearn.linear_model import Ridge\r\n",
+							"from sklearn.linear_model import Lasso\r\n",
+							"from sklearn import neighbors\r\n",
+							"from xgboost import XGBRegressor \r\n",
+							"\r\n",
+							"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
+							"print('lib are imported')"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 14
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Evaluating the models with data - create function"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def metric_table(test, predictions):\r\n",
+							"    \r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"  model_r2, model_RMSE, model_MAE, model_MSE, model_Adj_R2 = [], [], [], [], []\r\n",
+							"\r\n",
+							"\r\n",
+							"  r2 = r2_score(test, predictions)\r\n",
+							"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
+							"  mae = mean_absolute_error(test, predictions)\r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"  # mape = mean_absolute_percentage_error(test, predictions)\r\n",
+							"\r\n",
+							"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
+							"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
+							"\r\n",
+							"  model_r2.append(r2)\r\n",
+							"  model_RMSE.append(rmse)\r\n",
+							"  model_MAE.append(mae)\r\n",
+							"  model_MSE.append(mse)\r\n",
+							"  # model_MAPE.append(mape)\r\n",
+							"  model_Adj_R2.append(adj_r2)\r\n",
+							"\r\n",
+							"\r\n",
+							"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE})\r\n",
+							"  df_result = round(df_result,3)\r\n",
+							"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+							"  df_result\r\n",
+							"  return df_result"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 6
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Create function that add all missing date"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def add_all_date(df, whitout_sun=0):\r\n",
+							"  rng = pd.date_range(start = df.index[0], end =df.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
+							"  df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
+							"  if whitout_sun == 1:\r\n",
+							"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
+							"  df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
+							"  df = df[df.index.weekday != 6]                                                # removing sunday (6) from df\r\n",
+							"  df = df_date_temp.join(df)                                                    # left join dataset on dummy date\r\n",
+							"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
+							"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
+							"  return df\r\n",
+							"  \r\n",
+							"def add_all_date(df, whitout_sun=0):\r\n",
+							"  rng = pd.date_range(start = df.index[0], end =df.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
+							"  df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
+							"  if whitout_sun == 1:\r\n",
+							"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
+							"  df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
+							"  df = df[df.index.weekday != 6]                                                # removing sunday (6) from df\r\n",
+							"  df = df_date_temp.join(df)                                                    # left join dataset on dummy date\r\n",
+							"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
+							"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
+							"  return df"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 7
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Import dataset"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": true,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# credentials\r\n",
+							"jdbcHostname = \"srv-db-sql-dmd.database.windows.net\"\r\n",
+							"jdbcDatabase = \"db-sql-dmd\"\r\n",
+							"jdbcPort = \"1433\"\r\n",
+							"username = \"marko\"\r\n",
+							"password = \"5Avramovic!\"\r\n",
+							"jdbcUrl = \"jdbc:sqlserver://{0}:{1};database={2}\".format(jdbcHostname, jdbcPort, jdbcDatabase)\r\n",
+							"connectionProperties = {\r\n",
+							"    \"user\" : username,\r\n",
+							"    \"password\" : password,\r\n",
+							"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
+							"}"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 8
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# connect to database with credentials, execut SQL \r\n",
+							"pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ) Grupno\"\r\n",
+							"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+							"# display(df_spark)\r\n",
+							"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+							"\r\n",
+							"df.set_index('DATUM', inplace=True)\r\n",
+							"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+							"df"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 42
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Test-Train Split"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"n = 19\r\n",
+							"\r\n",
+							"df = add_all_date(df, )      # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+							"train = df.iloc[:-n]\r\n",
+							"test = df.iloc[-n:]\r\n",
+							"\r\n",
+							"test.head()"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 47
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Train ARIMA model and prediction"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# model = ARIMA(train, order=(28,0,0))\r\n",
+							"order = [28,0,0]\r\n",
+							"model = ARIMA(train, order=(order))\r\n",
+							"model_fit = model.fit()\r\n",
+							"prediction = model_fit.forecast(n)\r\n",
+							"\r\n",
+							"if not isinstance(prediction.index[0], datetime):               # ako index nije datum pretvori ga u datum\r\n",
+							"  prediction = prediction.to_frame().set_index(test.index)      # move series to dataframe and set index as test datum\r\n",
+							"\r\n",
+							"# korekcije\r\n",
+							"prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
+							"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
+							"prediction"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 46
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Graph"
+						],
+						"attachments": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# pyplot.figure(figsize=(8, 5), dpi=80)       # adjust graph size\r\n",
+							"pyplot.figure(figsize=(20, 7), dpi=80)       # adjust graph size\r\n",
+							"pyplot.plot(prediction, color='red', label='prediction')\r\n",
+							"pyplot.plot(test, label='real')\r\n",
+							"pyplot.legend(loc=\"upper left\")\r\n",
+							"pyplot.show()\r\n",
+							"# print(order)\r\n",
+							"metric_table(test, prediction)             # metric table\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 76
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							},
+							"collapsed": false
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/SAP/DMD_2020.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook ML Model')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"folder": {
+					"name": "Archive"
+				},
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "SparkSmall",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "f56b8784-1956-4b1b-bb39-2de6f7e4cf72"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"synapse_widget": {
+						"version": "0.1"
+					},
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws/bigDataPools/SparkSmall",
+						"name": "SparkSmall",
+						"type": "Spark",
+						"endpoint": "https://synapsedtsws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmall",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.1",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"extraHeader": null
+					},
+					"sessionKeepAliveTimeout": 300
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"source": [
+							"print('hello DTS')\r\n",
+							"\r\n",
+							"p = 'marko poparko'\r\n",
+							"\r\n",
+							"def myF():\r\n",
+							"    return print(p)\r\n",
+							"\r\n",
+							"myF()\r\n",
+							"\r\n",
+							"\r\n",
+							""
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 1
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql import SparkSession\r\n",
+							"from pyspark.sql.types import *\r\n",
+							"account_name = \"dlsynapsedts\"\r\n",
+							"container_name = \"processed\"\r\n",
+							"relative_path = \"\"\r\n",
+							"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path)\r\n",
+							"# adls_path = 'https://dlsynapsedts.blob.core.windows.net/processed/DMD_dataset.csv' % (container_name, account_name, relative_path)\r\n",
+							"\r\n",
+							"df1 = spark.read.option('header', 'true') \\\r\n",
+							"                .option('delimiter', ',') \\\r\n",
+							"                .csv(adls_path + '/DMD_dataset.csv')"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://processed@dlsynapsedts.dfs.core.windows.net/DMD_dataset.csv', format='csv'\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							")\r\n",
+							"display(df.limit(10))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import pandas as pd\r\n",
+							"import numpy as np\r\n",
+							"\r\n",
+							"from dateutil.parser import parse \r\n",
+							"import matplotlib as mpl\r\n",
+							"import matplotlib.pyplot as plt\r\n",
+							"import matplotlib.pyplot as pyplot\r\n",
+							"import seaborn as sns\r\n",
+							"\r\n",
+							"from datetime import datetime\r\n",
+							"\r\n",
+							"import warnings\r\n",
+							"warnings.simplefilter(\"ignore\")\r\n",
+							"\r\n",
+							"from datetime import datetime\r\n",
+							"import time\r\n",
+							"import math\r\n",
+							"from sklearn.ensemble import RandomForestRegressor\r\n",
+							"from sklearn.linear_model import LinearRegression\r\n",
+							"from sklearn.preprocessing import PolynomialFeatures\r\n",
+							"from sklearn.tree import DecisionTreeRegressor\r\n",
+							"from sklearn.model_selection import cross_val_score\r\n",
+							"from sklearn.svm import SVR\r\n",
+							"from sklearn.linear_model import LogisticRegression\r\n",
+							"from sklearn.linear_model import Ridge\r\n",
+							"from sklearn.linear_model import Lasso\r\n",
+							"from sklearn import neighbors\r\n",
+							"from xgboost import XGBRegressor \r\n",
+							"\r\n",
+							"from pandas.plotting import autocorrelation_plot\r\n",
+							"\r\n",
+							"\r\n",
+							"# from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error   # metrics\r\n",
+							"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
+							"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
+							"from statsmodels.tsa.ar_model import AR\r\n",
+							"from statsmodels.tsa.arima_model import ARIMA\r\n",
+							"from statsmodels.tsa.statespace.sarimax import SARIMAX\r\n",
+							"# from statsmodels.tsa.ar_model import AutoReg\r\n",
+							"# from statsmodels.tsa.arima.model import ARIMA\r\n",
+							"# import pmdarima as pm\r\n",
+							"\r\n",
+							"\r\n",
+							"plt.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
+							"print('jes imported jeeee :D')"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 15
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def metric_table(test, predictions):\r\n",
+							"    \r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"  model_r2, model_RMSE, model_MAE, model_MSE, model_MAPE, model_Adj_R2 = [], [], [], [], [], []\r\n",
+							"\r\n",
+							"\r\n",
+							"  r2 = r2_score(test, predictions)\r\n",
+							"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
+							"  mae = mean_absolute_error(test, predictions)\r\n",
+							"  mse = mean_squared_error(test, predictions)\r\n",
+							"  mape = mean_absolute_percentage_error(test, predictions)\r\n",
+							"\r\n",
+							"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
+							"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
+							"\r\n",
+							"  model_r2.append(r2)\r\n",
+							"  model_RMSE.append(rmse)\r\n",
+							"  model_MAE.append(mae)\r\n",
+							"  model_MSE.append(mse)\r\n",
+							"  model_MAPE.append(mape)\r\n",
+							"  model_Adj_R2.append(adj_r2)\r\n",
+							"\r\n",
+							"\r\n",
+							"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE, \"MAPE\": model_MAPE})\r\n",
+							"  df_result = round(df_result,3)\r\n",
+							"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
+							"  df_result\r\n",
+							"  return df_result"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 9
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# data = sc.parallelize(list(\"Hello World\"))\r\n",
+							"sc.parallelize(list(\"Hello World\"))"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 4
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"pip install -U scikit-learn"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 12
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import requests\r\n",
+							"import pandas as pd\r\n",
+							"\r\n",
+							"url = 'https://www.cmegroup.com/CmeWS/mvc/Volume/Details/F/8478/20200807/F?tradeDate=20200807'\r\n",
+							"r = requests.get(url)\r\n",
+							"dj = r.json()\r\n",
+							"        \r\n",
+							"df = pd.DataFrame(dj['monthData'])\r\n",
+							"# df.to_csv('out.csv', index=False)"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"df"
+						],
+						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SparkSmall')]",
+			"type": "Microsoft.Synapse/workspaces/bigDataPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"autoPause": {
+					"enabled": true,
+					"delayInMinutes": 15
+				},
+				"autoScale": {
+					"enabled": true,
+					"maxNodeCount": 10,
+					"minNodeCount": 3
+				},
+				"nodeCount": 10,
+				"nodeSize": "Small",
+				"nodeSizeFamily": "MemoryOptimized",
+				"sparkVersion": "3.1",
+				"isComputeIsolationEnabled": false,
+				"sessionLevelPackagesEnabled": true,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "westeurope"
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default/synapse-ws-sql--synapsedtsws')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"privateLinkResourceId": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws",
+				"groupId": "sql",
+				"fqdns": [
+					"synapsedtsws.7fef4202-f825-4c26-829b-af5c2e2a7226.sql.azuresynapse.net"
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/default/synapse-ws-sqlOnDemand--synapsedtsws')]",
+			"type": "Microsoft.Synapse/workspaces/managedVirtualNetworks/managedPrivateEndpoints",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"privateLinkResourceId": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws",
+				"groupId": "sqlOnDemand",
+				"fqdns": [
+					"synapsedtsws-ondemand.7fef4202-f825-4c26-829b-af5c2e2a7226.sql.azuresynapse.net"
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_dl_to_sql_2')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DMD_2020.csv",
+						"folderPath": "dmd/SAP",
+						"fileSystem": "row"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "DOKUMENT_ISPORUKE|STAVKA|OBLAST_PRODAJE|WBSTK|PRIMALAC_ROBE|TIP_ISPORUKE|TIP_PROD_DOK|DATUM_ISPORUKE|DOBAVLJAC|PLANIRANI_DATUM_ISPORUKE|STVARNI_DATUM_ISPORUKE|MATERIJAL|KOLICINA|SKLADISNA_LOKACIJA|POGON|ODELJAK|SIFRA_RAZLOGA_POVRATA|OPIS_RAZLOGA_POVRATA",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_dl_sql_2')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data from dl to sql Sap",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_dl_sap_csv",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_stg_sap",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/ds_dl_sap_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_stg_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/trg_copy_all_2')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pip_copy_all_dl_sql",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-05-12T13:31:00",
+						"timeZone": "Central Europe Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								7
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/pip_copy_all_dl_sql')]"
+			]
+		}
+	]
+}
