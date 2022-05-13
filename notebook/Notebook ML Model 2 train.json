@@ -1,9 +1,6 @@
 {
-	"name": "Notebook ML Model 2_bckp2",
+	"name": "Notebook ML Model 2 train",
 	"properties": {
-		"folder": {
-			"name": "Archive"
-		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -20,14 +17,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "b594705c-cde8-40c5-acf8-0b3283f4a9f8"
+				"spark.autotune.trackingId": "50308cf2-43a5-42d2-9233-cae21ffc74d2"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -49,7 +43,7 @@
 				"nodeCount": 10,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -65,8 +59,7 @@
 				},
 				"source": [
 					"## Import library"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -121,8 +114,7 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"attachments": null,
-				"execution_count": 14
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -135,8 +127,7 @@
 				},
 				"source": [
 					"### Evaluating the models with data - create function"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -181,7 +172,6 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"attachments": null,
 				"execution_count": 6
 			},
 			{
@@ -195,8 +185,7 @@
 				},
 				"source": [
 					"### Create function that add all missing date"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -223,20 +212,8 @@
 					"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
 					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
 					"  return df\r\n",
-					"  \r\n",
-					"def add_all_date(df, whitout_sun=0):\r\n",
-					"  rng = pd.date_range(start = df.index[0], end =df.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
-					"  df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
-					"  if whitout_sun == 1:\r\n",
-					"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
-					"  df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
-					"  df = df[df.index.weekday != 6]                                                # removing sunday (6) from df\r\n",
-					"  df = df_date_temp.join(df)                                                    # left join dataset on dummy date\r\n",
-					"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
-					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
-					"  return df"
+					""
 				],
-				"attachments": null,
 				"execution_count": 7
 			},
 			{
@@ -249,9 +226,42 @@
 					}
 				},
 				"source": [
-					"#### Import dataset"
+					"### Create function that group date by week"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"def group_by_week(df):\r\n",
+					"  df['year_month_week'] = df.index.strftime('%Y_%m') + '_' + df.index.week.astype(str)      # create year_month_week from index\r\n",
+					"  df_week = df.groupby('year_month_week').sum()         # group df by week\r\n",
+					"  return df_week"
 				],
-				"attachments": null
+				"execution_count": 17
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"#### Import dataset"
+				]
 			},
 			{
 				"cell_type": "code",
@@ -280,7 +290,6 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"attachments": null,
 				"execution_count": 8
 			},
 			{
@@ -308,8 +317,7 @@
 					"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
 					"df"
 				],
-				"attachments": null,
-				"execution_count": 42
+				"execution_count": 9
 			},
 			{
 				"cell_type": "markdown",
@@ -322,8 +330,7 @@
 				},
 				"source": [
 					"#### Test-Train Split"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -347,8 +354,7 @@
 					"\r\n",
 					"test.head()"
 				],
-				"attachments": null,
-				"execution_count": 47
+				"execution_count": 10
 			},
 			{
 				"cell_type": "markdown",
@@ -361,8 +367,7 @@
 				},
 				"source": [
 					"### Train ARIMA model and prediction"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -378,8 +383,8 @@
 					}
 				},
 				"source": [
-					"# model = ARIMA(train, order=(28,0,0))\r\n",
-					"order = [28,0,0]\r\n",
+					"# model = ARIMA(train, order=(p,d,q))\r\n",
+					"order = [28,1,1]\r\n",
 					"model = ARIMA(train, order=(order))\r\n",
 					"model_fit = model.fit()\r\n",
 					"prediction = model_fit.forecast(n)\r\n",
@@ -392,8 +397,7 @@
 					"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
 					"prediction"
 				],
-				"attachments": null,
-				"execution_count": 46
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -406,8 +410,7 @@
 				},
 				"source": [
 					"### Graph"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -433,8 +436,48 @@
 					"metric_table(test, prediction)             # metric table\r\n",
 					""
 				],
-				"attachments": null,
-				"execution_count": 76
+				"execution_count": 15
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Group by week after day prediction and plot"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"prediction_week = group_by_week(prediction)\r\n",
+					"test_week = group_by_week(test)\r\n",
+					"pyplot.figure(figsize=(20, 7), dpi=80)       # adjust graph size\r\n",
+					"pyplot.plot(prediction_week, color='red', label='prediction')\r\n",
+					"pyplot.plot(test_week, label='real')\r\n",
+					"pyplot.legend(loc=\"upper left\")\r\n",
+					"\r\n",
+					"round(prediction_week).to_csv('prediction_week.csv', sep=',', encoding='utf-8')        # download prediction_week\r\n",
+					"round(test_week).to_csv('test_week.csv', sep=',', encoding='utf-8')                    # download prediction_week\r\n",
+					"print(order)\r\n",
+					"metric_table(test_week, prediction_week)             # metric table"
+				],
+				"execution_count": 18
 			},
 			{
 				"cell_type": "code",
@@ -448,21 +491,217 @@
 							"deleting": false
 						}
 					},
-					"microsoft": {
-						"language": "python"
-					},
 					"collapsed": false
 				},
 				"source": [
-					"%%pyspark\r\n",
-					"df = spark.read.load('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/SAP/DMD_2020.csv', format='csv'\r\n",
-					"## If header exists uncomment line below\r\n",
-					"##, header=True\r\n",
-					")\r\n",
-					"display(df.limit(10))"
+					"# %%pyspark\r\n",
+					"# df = spark.read.load('abfss://row@dlsynapsedts.dfs.core.windows.net/dmd/SAP/DMD_2020.csv', format='csv'\r\n",
+					"# ## If header exists uncomment line below\r\n",
+					"# ##, header=True\r\n",
+					"# )\r\n",
+					"# display(df.limit(10))"
 				],
-				"attachments": null,
 				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Grid search ARIMA"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# grid search ARIMA parameters for time series\r\n",
+					"import warnings\r\n",
+					"from math import sqrt\r\n",
+					"from pandas import read_csv\r\n",
+					"from statsmodels.tsa.arima.model import ARIMA\r\n",
+					"from sklearn.metrics import mean_squared_error\r\n",
+					"\r\n",
+					"# create empty metric_grid\r\n",
+					"metric_grid = pd.DataFrame(columns=['0,0'])\r\n",
+					"metric_grid_average = pd.DataFrame(columns=['order'])\r\n",
+					"\r\n",
+					"# evaluate an ARIMA model for a given order (p,d,q)\r\n",
+					"def evaluate_arima_model(X, arima_order):\r\n",
+					"\t# empty metric_grid\r\n",
+					"\tmetric_grid = pd.DataFrame(columns=['0,0'])\r\n",
+					"\t# prepare training dataset\r\n",
+					"\t# train_size = int(len(X) * 0.97)\r\n",
+					"\ttrain_size = len(X)-n\r\n",
+					"\ttrain, test = X[0:train_size], X[train_size:]\r\n",
+					"\thistory = [x for x in train]\r\n",
+					"\t# make predictions\r\n",
+					"\tpredictions = list()\r\n",
+					"\tfor t in range(len(test)):\r\n",
+					"\t\tmodel = ARIMA(history, order=arima_order)\r\n",
+					"\t\tmodel_fit = model.fit()\r\n",
+					"\t\tyhat = model_fit.forecast()[0]\r\n",
+					"\t\tpredictions.append(yhat)\r\n",
+					"\t\thistory.append(test[t])\r\n",
+					"\t# calculate out of sample error\r\n",
+					"\t# rmse = sqrt(mean_squared_error(test, predictions))\r\n",
+					"\tmape = mean_squared_error(test, predictions)\r\n",
+					"\treturn mape\r\n",
+					" \r\n",
+					"# evaluate combinations of p, d and q values for an ARIMA model\r\n",
+					"def evaluate_models(dataset, p_values, d_values, q_values):\r\n",
+					"\tdataset = dataset.astype('float32')\r\n",
+					"\tbest_score, best_cfg = float(\"inf\"), None\r\n",
+					"\tfor p in p_values:\r\n",
+					"\t\tfor d in d_values:\r\n",
+					"\t\t\tfor q in q_values:\r\n",
+					"\t\t\t\torder = (p,d,q)\r\n",
+					"\t\t\t\ttry:\r\n",
+					"\t\t\t\t\tmape = evaluate_arima_model(dataset, order)\r\n",
+					"\t\t\t\t\tif mape < best_score:\r\n",
+					"\t\t\t\t\t\tbest_score, best_cfg = mape, order\r\n",
+					"\t\t\t\t\tprint('ARIMA%s MSE=%.3f' % (order,mape))\r\n",
+					"          # fill metric_grid with mape result\r\n",
+					"\t\t\t\t\td_q = str(d) + ',' + str(q)\r\n",
+					"\t\t\t\t\tmetric_grid.loc[p, d_q] = round(mape,3)\r\n",
+					"\t\t\t\texcept:\r\n",
+					"\t\t\t\t\tcontinue\r\n",
+					"\tprint('Best ARIMA%s MSE=%.3f' % (best_cfg, best_score))\r\n",
+					" "
+				],
+				"execution_count": 19
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# load dataset\r\n",
+					"n = 30\r\n",
+					"t_now = datetime.now()\r\n",
+					"series = pd.read_csv('https://raw.githubusercontent.com/marko2212/test_data/main/DMD_stavke_komis_dataset.csv',index_col='DATUM', header=0, parse_dates=[0], dayfirst=True)\r\n",
+					"# evaluate parameters\r\n",
+					"# p_values = [0, 1, 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28, 29, 30]\r\n",
+					"p_values = [0,1, 2]\r\n",
+					"d_values = range(0, 2)\r\n",
+					"q_values = range(0, 2)\r\n",
+					"warnings.filterwarnings(\"ignore\")\r\n",
+					"evaluate_models(series.values, p_values, d_values, q_values)\r\n",
+					"\r\n",
+					"print(datetime.now() - t_now)"
+				],
+				"execution_count": 21
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"## Regression"
+				]
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Features engineering"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# creating new features year, month, day\r\n",
+					"df['DATUM'] = df.index\r\n",
+					"features = df\r\n",
+					"features['year']            = features['DATUM'].dt.year\r\n",
+					"features['month']           = features['DATUM'].dt.month\r\n",
+					"features['week']            = features['DATUM'].dt.week\r\n",
+					"features['day']             = features['DATUM'].dt.day\r\n",
+					"features['quarter']         = features['DATUM'].dt.quarter\r\n",
+					"features['weekofyear']      = features['DATUM'].dt.weekofyear\r\n",
+					"features['year_month']      = features['DATUM'].dt.strftime('%Y-%m')\r\n",
+					"# features['YEAR_WEEK']           = features.index.strftime('%Y-w%U')         # Year week 2019-w21\r\n",
+					"\r\n",
+					"features['weekday']         = features['DATUM'].dt.weekday              # day in week\r\n",
+					"features['days_in_month']   = features['DATUM'].dt.days_in_month        # number of day in month\r\n",
+					"features['flag_is_weekend'] = np.where(features['weekday'] > 4, 1, 0)   # since none order is created on weekend this feature is usfficient\r\n",
+					"features['week_start']      = features['DATUM'].dt.to_period('W').apply(lambda r: r.start_time)   # week start date\r\n",
+					"\r\n",
+					"features"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				]
 			}
 		]
 	}
