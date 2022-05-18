@@ -20,171 +20,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7e2bc7da-84a2-4239-ab49-68ab457f91b4"
+				"spark.autotune.trackingId": "99de1b8c-508e-43d0-a6d2-e8cfc45b5090"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1",
-				"state": {
-					"050c61c6-a496-4450-8827-4e4bcf8449ab": {
-						"type": "Synapse.DataFrame",
-						"sync_state": {
-							"table": {
-								"rows": [
-									{
-										"0": "2021-07-23",
-										"1": "1254"
-									},
-									{
-										"0": "2020-03-02",
-										"1": "2554"
-									},
-									{
-										"0": "2022-02-05",
-										"1": "367"
-									},
-									{
-										"0": "2020-06-24",
-										"1": "1145"
-									},
-									{
-										"0": "2019-07-06",
-										"1": "730"
-									}
-								],
-								"schema": [
-									{
-										"key": "0",
-										"name": "DATUM",
-										"type": "date"
-									},
-									{
-										"key": "1",
-										"name": "STAVKE_NA_KOMIS_NALOGU",
-										"type": "int"
-									}
-								],
-								"truncated": false
-							},
-							"isSummary": false,
-							"language": "scala"
-						},
-						"persist_state": {
-							"view": {
-								"type": "details",
-								"chartOptions": {
-									"chartType": "bar",
-									"aggregationType": "sum",
-									"categoryFieldKeys": [
-										"0"
-									],
-									"seriesFieldKeys": [
-										"1"
-									],
-									"isStacked": false
-								}
-							}
-						}
-					},
-					"4c8c1409-a9c9-40b2-9e56-d5037802ce59": {
-						"type": "Synapse.DataFrame",
-						"sync_state": {
-							"table": {
-								"rows": [
-									{
-										"0": "01",
-										"1": "BDF",
-										"2": "Nivea"
-									},
-									{
-										"0": "02",
-										"1": "Ferrero",
-										"2": "Ferrero"
-									},
-									{
-										"0": "04",
-										"1": "Johnson wax",
-										"2": "Johnson Wax"
-									},
-									{
-										"0": "06",
-										"1": "Diageo",
-										"2": "Diageo program"
-									},
-									{
-										"0": "09",
-										"1": "BDF",
-										"2": "Eucerin"
-									},
-									{
-										"0": "17",
-										"1": "BDF",
-										"2": "Hansaplast"
-									},
-									{
-										"0": "60",
-										"1": "Tikves",
-										"2": "Tikve? classic"
-									},
-									{
-										"0": "61",
-										"1": "Tikves",
-										"2": "Tikve? premium"
-									},
-									{
-										"0": "62",
-										"1": "Tikves",
-										"2": "Tikve? rakija"
-									},
-									{
-										"0": "63",
-										"1": "Tikves",
-										"2": "Tikve? standard"
-									}
-								],
-								"schema": [
-									{
-										"key": "0",
-										"name": "Odeljak",
-										"type": "string"
-									},
-									{
-										"key": "1",
-										"name": "Brend",
-										"type": "string"
-									},
-									{
-										"key": "2",
-										"name": "Opis",
-										"type": "string"
-									}
-								],
-								"truncated": false
-							},
-							"isSummary": false,
-							"language": "scala"
-						},
-						"persist_state": {
-							"view": {
-								"type": "details",
-								"chartOptions": {
-									"chartType": "bar",
-									"aggregationType": "count",
-									"categoryFieldKeys": [
-										"0"
-									],
-									"seriesFieldKeys": [
-										"0"
-									],
-									"isStacked": false
-								}
-							}
-						}
-					}
-				}
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -206,7 +46,7 @@
 				"nodeCount": 10,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -222,8 +62,7 @@
 				},
 				"source": [
 					"## Import library"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -273,7 +112,6 @@
 					"plt.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('jes importedddd je :D')"
 				],
-				"attachments": null,
 				"execution_count": 1
 			},
 			{
@@ -287,8 +125,7 @@
 				},
 				"source": [
 					"#### Access Azure SQL database "
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -322,7 +159,6 @@
 					"\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 2
 			},
 			{
@@ -336,8 +172,7 @@
 				},
 				"source": [
 					"#### Access Data Lake Gen 2 using secret key - not working"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -368,7 +203,6 @@
 					"\r\n",
 					"display(df.limit(10))"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -389,7 +223,6 @@
 					"# mssparkutils.credentials.help()\r\n",
 					"accountKey = mssparkutils.credentials.getSecret('keywaultdts', 'secretdts')"
 				],
-				"attachments": null,
 				"execution_count": 8
 			},
 			{
@@ -413,7 +246,6 @@
 					"    { \"accountKey\" : accountKey}\r\n",
 					")"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -427,8 +259,7 @@
 				},
 				"source": [
 					"### Access Blob storage using AccountKey - pression issue"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -452,7 +283,6 @@
 					")\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 1
 			},
 			{
@@ -473,7 +303,6 @@
 					"df = spark.read.load('synfs:/' + jobId + '/test/dmd/Odeljak/Odeljak_fix.csv', format = 'csv')\r\n",
 					"display(df)"
 				],
-				"attachments": null,
 				"execution_count": 5
 			},
 			{
@@ -487,8 +316,7 @@
 				},
 				"source": [
 					"#### Direct access from Data Lake Gen 2 - permision issue"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -515,7 +343,6 @@
 					")\r\n",
 					"display(df.limit(10))"
 				],
-				"attachments": null,
 				"execution_count": 3
 			},
 			{
@@ -535,7 +362,6 @@
 					"df.write.mode('overwrite').option('header', 'true').csv('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/')\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 4
 			},
 			{
@@ -549,8 +375,7 @@
 				},
 				"source": [
 					"### Output using Spark - Store output on Blob Storage - work"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -576,7 +401,6 @@
 					" .format(\"com.databricks.spark.csv\")\r\n",
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
 				],
-				"attachments": null,
 				"execution_count": 20
 			},
 			{
@@ -590,8 +414,7 @@
 				},
 				"source": [
 					"#### Library issue"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -610,7 +433,6 @@
 					"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error       #, mean_absolute_percentage_error\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 46
 			},
 			{
@@ -630,7 +452,6 @@
 					"from sklearn.metrics import  mean_absolute_percentage_error\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -650,7 +471,6 @@
 					"import sklearn\r\n",
 					"sklearn.show_versions()"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -670,7 +490,61 @@
 					"pip install -U scikit-learn\r\n",
 					""
 				],
-				"attachments": null,
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"### Panda to spark function"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"from pyspark.sql.types import *\r\n",
+					"\r\n",
+					"# Auxiliar functions\r\n",
+					"def equivalent_type(f):\r\n",
+					"    if f == 'datetime64[ns]': return TimestampType()\r\n",
+					"    elif f == 'int64': return LongType()\r\n",
+					"    elif f == 'int32': return IntegerType()\r\n",
+					"    elif f == 'float64': return DoubleType()\r\n",
+					"    elif f == 'float32': return FloatType()\r\n",
+					"    else: return StringType()\r\n",
+					"\r\n",
+					"def define_structure(string, format_type):\r\n",
+					"    try: typo = equivalent_type(format_type)\r\n",
+					"    except: typo = StringType()\r\n",
+					"    return StructField(string, typo)\r\n",
+					"\r\n",
+					"# Given pandas dataframe, it will return a spark's dataframe.\r\n",
+					"def pandas_to_spark(pandas_df):\r\n",
+					"    columns = list(pandas_df.columns)\r\n",
+					"    types = list(pandas_df.dtypes)\r\n",
+					"    struct_list = []\r\n",
+					"    for column, typo in zip(columns, types): \r\n",
+					"      struct_list.append(define_structure(column, typo))\r\n",
+					"    p_schema = StructType(struct_list)\r\n",
+					"    return sqlContext.createDataFrame(pandas_df, p_schema)"
+				],
 				"execution_count": null
 			},
 			{
@@ -684,8 +558,7 @@
 				},
 				"source": [
 					"## Evaluating the models with data - create function"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -730,7 +603,6 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"attachments": null,
 				"execution_count": 50
 			},
 			{
@@ -744,8 +616,7 @@
 				},
 				"source": [
 					"#### Import dataset"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -764,7 +635,6 @@
 					"# set test set\r\n",
 					"n = 15"
 				],
-				"attachments": null,
 				"execution_count": 51
 			},
 			{
@@ -789,7 +659,6 @@
 					"# df = features\r\n",
 					"df"
 				],
-				"attachments": null,
 				"execution_count": 52
 			},
 			{
@@ -803,8 +672,7 @@
 				},
 				"source": [
 					"#### Test-Train Split"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -824,7 +692,6 @@
 					"test_date = dataset.iloc[-n:, 0:1]\r\n",
 					"train"
 				],
-				"attachments": null,
 				"execution_count": 6
 			},
 			{
@@ -855,7 +722,6 @@
 					"    data = pd.Series(data)\r\n",
 					"# predict"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -884,7 +750,6 @@
 					"df = pd.read_csv(url,sep=\",\")\r\n",
 					"df['Consumption'].plot()"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -915,7 +780,6 @@
 					"#\r\n",
 					"print(ar_model.summary())"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -935,7 +799,6 @@
 					"test_data\r\n",
 					"test"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -954,7 +817,6 @@
 				"source": [
 					"model = ARIMA(train, order=(5,1,1))"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -981,7 +843,6 @@
 					"model_fit\r\n",
 					"# model_fit.summary()"
 				],
-				"attachments": null,
 				"execution_count": 7
 			},
 			{
@@ -1000,7 +861,6 @@
 				"source": [
 					"model_fit.forecast().values[0]"
 				],
-				"attachments": null,
 				"execution_count": 11
 			},
 			{
@@ -1033,7 +893,6 @@
 					"    data = pd.Series(data)\r\n",
 					"# predict"
 				],
-				"attachments": null,
 				"execution_count": 13
 			},
 			{
@@ -1057,7 +916,6 @@
 					"pyplot.show()\r\n",
 					"metric_table(test, predict)             # metric table"
 				],
-				"attachments": null,
 				"execution_count": 32
 			},
 			{
@@ -1071,8 +929,7 @@
 				},
 				"source": [
 					"## Regression"
-				],
-				"attachments": null
+				]
 			},
 			{
 				"cell_type": "code",
@@ -1101,7 +958,6 @@
 					"X = d[['day']]\r\n",
 					"y"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -1122,7 +978,6 @@
 					"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 0)\r\n",
 					"X_train"
 				],
-				"attachments": null,
 				"execution_count": 68
 			},
 			{
@@ -1144,7 +999,6 @@
 					"X_train = sc.fit_transform(X_train)\r\n",
 					"X_test = sc.transform(X_test)"
 				],
-				"attachments": null,
 				"execution_count": 69
 			},
 			{
@@ -1185,7 +1039,6 @@
 					"    model_MAE.append(mae)\r\n",
 					"    model_MSE.append(mse)"
 				],
-				"attachments": null,
 				"execution_count": 70
 			},
 			{
@@ -1227,7 +1080,6 @@
 					"for model in models:\r\n",
 					"    evaluate(model)"
 				],
-				"attachments": null,
 				"execution_count": 71
 			},
 			{
@@ -1252,7 +1104,6 @@
 					"    .background_gradient(\"Blues\",  subset=['R2'])\\\r\n",
 					"    .background_gradient(\"Blues_r\",  subset=['RMSE', 'MAE', 'MSE'])"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -1273,7 +1124,6 @@
 					"regressor = RandomForestRegressor(n_estimators = 100, random_state = 0)\r\n",
 					"regressor.fit(X_train, y_train)"
 				],
-				"attachments": null,
 				"execution_count": 72
 			},
 			{
@@ -1306,7 +1156,6 @@
 					"# df_result['diff'].total()\r\n",
 					"df_result"
 				],
-				"attachments": null,
 				"execution_count": 73
 			},
 			{
@@ -1332,7 +1181,6 @@
 					"plt.legend()\r\n",
 					"plt.show()"
 				],
-				"attachments": null,
 				"execution_count": 76
 			},
 			{
@@ -1352,7 +1200,6 @@
 					"pip install -U scikit-learn\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 77
 			}
 		]

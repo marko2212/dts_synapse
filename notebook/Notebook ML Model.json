@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "e7871dec-6bf6-4450-8194-95da31a0e175"
+				"spark.autotune.trackingId": "5487400c-1aa7-4a07-b3df-99a9a6e27464"
 			}
 		},
 		"metadata": {
@@ -102,7 +102,7 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"execution_count": null
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -160,7 +160,7 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"execution_count": 56
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -201,7 +201,7 @@
 					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
 					"  return df"
 				],
-				"execution_count": 57
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -256,7 +256,7 @@
 					"    p_schema = StructType(struct_list)\r\n",
 					"    return sqlContext.createDataFrame(pandas_df, p_schema)"
 				],
-				"execution_count": null
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -298,7 +298,7 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"execution_count": 58
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -334,12 +334,12 @@
 					"# display(df_spark)\r\n",
 					"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
 					"\r\n",
-					"df.set_index('DATUM', inplace=True)\r\n",
+					"df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
 					"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
 					"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
 					"df"
 				],
-				"execution_count": 59
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -371,19 +371,17 @@
 					"n = 19\r\n",
 					"\r\n",
 					"order = [28,0,0]\r\n",
+					"order = [2,0,0]\r\n",
 					"model = ARIMA(df, order=(order))\r\n",
 					"model_fit = model.fit()\r\n",
 					"prediction = model_fit.forecast(n)\r\n",
-					"\r\n",
-					"if not isinstance(prediction.index[0], datetime):               # ako index nije datum pretvori ga u datum\r\n",
-					"  prediction = prediction.to_frame().set_index(test.index)      # move series to dataframe and set index as test datum\r\n",
 					"\r\n",
 					"# korekcije\r\n",
 					"prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
 					"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
 					"prediction"
 				],
-				"execution_count": 62
+				"execution_count": 23
 			},
 			{
 				"cell_type": "markdown",
@@ -417,7 +415,7 @@
 					"pyplot.legend(loc=\"upper left\")\r\n",
 					"pyplot.show()"
 				],
-				"execution_count": 63
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -437,7 +435,7 @@
 					"a = pandas_to_spark(prediction)\r\n",
 					"display(a)"
 				],
-				"execution_count": 67
+				"execution_count": 28
 			},
 			{
 				"cell_type": "code",
@@ -458,7 +456,49 @@
 					"prediction2 = prediction2[['DATUM', 'predicted_mean']]\r\n",
 					"prediction2"
 				],
-				"execution_count": null
+				"execution_count": 13
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"\r\n",
+					"\r\n",
+					"prediction.reset_index(drop=False,inplace=True)\r\n",
+					"prediction\r\n",
+					"# sparkDF = sqlContext.createDataFrame(df)"
+				],
+				"execution_count": 24
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"sparkDF = sqlContext.createDataFrame(prediction)\r\n",
+					"display(sparkDF)"
+				],
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -484,7 +524,7 @@
 					" .format(\"com.databricks.spark.csv\")\r\n",
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/Komision_stavke/' + folder_name))"
 				],
-				"execution_count": 86
+				"execution_count": 12
 			}
 		]
 	}
