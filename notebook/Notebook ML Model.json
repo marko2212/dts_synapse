@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f48c21de-367a-4f82-85a8-0faa5cdbf4af"
+				"spark.autotune.trackingId": "e7871dec-6bf6-4450-8194-95da31a0e175"
 			}
 		},
 		"metadata": {
@@ -102,7 +102,7 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"execution_count": 55
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
