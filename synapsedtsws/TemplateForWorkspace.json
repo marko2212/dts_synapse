@@ -19,14 +19,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'synapsedtsws-WorkspaceDefaultSqlServer'"
 		},
-		"ls_MLStdio_properties_typeProperties_subscriptionId": {
-			"type": "string",
-			"defaultValue": "3d1a0d9a-7e0f-434a-bb08-b3b842299587"
-		},
-		"ls_MLStdio_properties_typeProperties_resourceGroupName": {
-			"type": "string",
-			"defaultValue": "Synapse_Analytics"
-		},
 		"ls_dl_asa_dts_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dlsynapsedts.dfs.core.windows.net"
@@ -1214,7 +1206,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"notebook": {
-								"referenceName": "Notebook ML Model 2",
+								"referenceName": "Notebook ML Model",
 								"type": "NotebookReference"
 							},
 							"snapshot": true,
@@ -1233,7 +1225,7 @@
 				"lastPublishTime": "2022-05-12T12:06:32Z"
 			},
 			"dependsOn": [
-				"[concat(variables('workspaceId'), '/notebooks/Notebook ML Model 2')]",
+				"[concat(variables('workspaceId'), '/notebooks/Notebook ML Model')]",
 				"[concat(variables('workspaceId'), '/bigDataPools/SparkSmall')]"
 			]
 		},
@@ -1999,28 +1991,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/ls_MLStdio')]",
-			"type": "Microsoft.Synapse/workspaces/linkedServices",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"annotations": [],
-				"type": "AzureMLService",
-				"typeProperties": {
-					"subscriptionId": "[parameters('ls_MLStdio_properties_typeProperties_subscriptionId')]",
-					"resourceGroupName": "[parameters('ls_MLStdio_properties_typeProperties_resourceGroupName')]",
-					"mlWorkspaceName": "DTS_ML_WS",
-					"authentication": "MSI"
-				},
-				"connectVia": {
-					"referenceName": "AutoResolveIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
 			]
 		},
 		{
@@ -3051,171 +3021,11 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "7e2bc7da-84a2-4239-ab49-68ab457f91b4"
+						"spark.autotune.trackingId": "62303929-b35f-4e38-8316-9e3d0d86d7d8"
 					}
 				},
 				"metadata": {
 					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1",
-						"state": {
-							"050c61c6-a496-4450-8827-4e4bcf8449ab": {
-								"type": "Synapse.DataFrame",
-								"sync_state": {
-									"table": {
-										"rows": [
-											{
-												"0": "2021-07-23",
-												"1": "1254"
-											},
-											{
-												"0": "2020-03-02",
-												"1": "2554"
-											},
-											{
-												"0": "2022-02-05",
-												"1": "367"
-											},
-											{
-												"0": "2020-06-24",
-												"1": "1145"
-											},
-											{
-												"0": "2019-07-06",
-												"1": "730"
-											}
-										],
-										"schema": [
-											{
-												"key": "0",
-												"name": "DATUM",
-												"type": "date"
-											},
-											{
-												"key": "1",
-												"name": "STAVKE_NA_KOMIS_NALOGU",
-												"type": "int"
-											}
-										],
-										"truncated": false
-									},
-									"isSummary": false,
-									"language": "scala"
-								},
-								"persist_state": {
-									"view": {
-										"type": "details",
-										"chartOptions": {
-											"chartType": "bar",
-											"aggregationType": "sum",
-											"categoryFieldKeys": [
-												"0"
-											],
-											"seriesFieldKeys": [
-												"1"
-											],
-											"isStacked": false
-										}
-									}
-								}
-							},
-							"4c8c1409-a9c9-40b2-9e56-d5037802ce59": {
-								"type": "Synapse.DataFrame",
-								"sync_state": {
-									"table": {
-										"rows": [
-											{
-												"0": "01",
-												"1": "BDF",
-												"2": "Nivea"
-											},
-											{
-												"0": "02",
-												"1": "Ferrero",
-												"2": "Ferrero"
-											},
-											{
-												"0": "04",
-												"1": "Johnson wax",
-												"2": "Johnson Wax"
-											},
-											{
-												"0": "06",
-												"1": "Diageo",
-												"2": "Diageo program"
-											},
-											{
-												"0": "09",
-												"1": "BDF",
-												"2": "Eucerin"
-											},
-											{
-												"0": "17",
-												"1": "BDF",
-												"2": "Hansaplast"
-											},
-											{
-												"0": "60",
-												"1": "Tikves",
-												"2": "Tikve? classic"
-											},
-											{
-												"0": "61",
-												"1": "Tikves",
-												"2": "Tikve? premium"
-											},
-											{
-												"0": "62",
-												"1": "Tikves",
-												"2": "Tikve? rakija"
-											},
-											{
-												"0": "63",
-												"1": "Tikves",
-												"2": "Tikve? standard"
-											}
-										],
-										"schema": [
-											{
-												"key": "0",
-												"name": "Odeljak",
-												"type": "string"
-											},
-											{
-												"key": "1",
-												"name": "Brend",
-												"type": "string"
-											},
-											{
-												"key": "2",
-												"name": "Opis",
-												"type": "string"
-											}
-										],
-										"truncated": false
-									},
-									"isSummary": false,
-									"language": "scala"
-								},
-								"persist_state": {
-									"view": {
-										"type": "details",
-										"chartOptions": {
-											"chartType": "bar",
-											"aggregationType": "count",
-											"categoryFieldKeys": [
-												"0"
-											],
-											"seriesFieldKeys": [
-												"0"
-											],
-											"isStacked": false
-										}
-									}
-								}
-							}
-						}
-					},
 					"enableDebugMode": false,
 					"kernelspec": {
 						"name": "synapse_pyspark",
@@ -3236,8 +3046,7 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28,
-						"extraHeader": null
+						"memory": 28
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -3253,8 +3062,7 @@
 						},
 						"source": [
 							"## Import library"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3304,7 +3112,6 @@
 							"plt.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 							"print('jes importedddd je :D')"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 1
 					},
@@ -3319,8 +3126,7 @@
 						},
 						"source": [
 							"#### Access Azure SQL database "
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3354,7 +3160,6 @@
 							"\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 2
 					},
@@ -3369,8 +3174,7 @@
 						},
 						"source": [
 							"#### Access Data Lake Gen 2 using secret key - not working"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3401,7 +3205,6 @@
 							"\r\n",
 							"display(df.limit(10))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3423,7 +3226,6 @@
 							"# mssparkutils.credentials.help()\r\n",
 							"accountKey = mssparkutils.credentials.getSecret('keywaultdts', 'secretdts')"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 8
 					},
@@ -3448,7 +3250,6 @@
 							"    { \"accountKey\" : accountKey}\r\n",
 							")"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3463,8 +3264,7 @@
 						},
 						"source": [
 							"### Access Blob storage using AccountKey - pression issue"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3488,7 +3288,6 @@
 							")\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 1
 					},
@@ -3510,7 +3309,6 @@
 							"df = spark.read.load('synfs:/' + jobId + '/test/dmd/Odeljak/Odeljak_fix.csv', format = 'csv')\r\n",
 							"display(df)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 5
 					},
@@ -3525,8 +3323,7 @@
 						},
 						"source": [
 							"#### Direct access from Data Lake Gen 2 - permision issue"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3553,7 +3350,6 @@
 							")\r\n",
 							"display(df.limit(10))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 3
 					},
@@ -3574,7 +3370,6 @@
 							"df.write.mode('overwrite').option('header', 'true').csv('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/')\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 4
 					},
@@ -3589,8 +3384,7 @@
 						},
 						"source": [
 							"### Output using Spark - Store output on Blob Storage - work"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3616,7 +3410,6 @@
 							" .format(\"com.databricks.spark.csv\")\r\n",
 							" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 20
 					},
@@ -3631,8 +3424,7 @@
 						},
 						"source": [
 							"#### Library issue"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3651,7 +3443,6 @@
 							"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error       #, mean_absolute_percentage_error\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 46
 					},
@@ -3672,7 +3463,6 @@
 							"from sklearn.metrics import  mean_absolute_percentage_error\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3693,7 +3483,6 @@
 							"import sklearn\r\n",
 							"sklearn.show_versions()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3714,7 +3503,82 @@
 							"pip install -U scikit-learn\r\n",
 							""
 						],
-						"attachments": null,
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Panda to spark function"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"from pyspark.sql.types import *\r\n",
+							"\r\n",
+							"# Auxiliar functions\r\n",
+							"def equivalent_type(f):\r\n",
+							"    if f == 'datetime64[ns]': return TimestampType()\r\n",
+							"    elif f == 'int64': return LongType()\r\n",
+							"    elif f == 'int32': return IntegerType()\r\n",
+							"    elif f == 'float64': return DoubleType()\r\n",
+							"    elif f == 'float32': return FloatType()\r\n",
+							"    else: return StringType()\r\n",
+							"\r\n",
+							"def define_structure(string, format_type):\r\n",
+							"    try: typo = equivalent_type(format_type)\r\n",
+							"    except: typo = StringType()\r\n",
+							"    return StructField(string, typo)\r\n",
+							"\r\n",
+							"# Given pandas dataframe, it will return a spark's dataframe.\r\n",
+							"def pandas_to_spark(pandas_df):\r\n",
+							"    columns = list(pandas_df.columns)\r\n",
+							"    types = list(pandas_df.dtypes)\r\n",
+							"    struct_list = []\r\n",
+							"    for column, typo in zip(columns, types): \r\n",
+							"      struct_list.append(define_structure(column, typo))\r\n",
+							"    p_schema = StructType(struct_list)\r\n",
+							"    return sqlContext.createDataFrame(pandas_df, p_schema)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"a = pandas_to_spark(prediction)\r\n",
+							"display(a)"
+						],
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3729,8 +3593,7 @@
 						},
 						"source": [
 							"## Evaluating the models with data - create function"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3775,7 +3638,6 @@
 							"  df_result\r\n",
 							"  return df_result"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 50
 					},
@@ -3790,8 +3652,7 @@
 						},
 						"source": [
 							"#### Import dataset"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3810,7 +3671,6 @@
 							"# set test set\r\n",
 							"n = 15"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 51
 					},
@@ -3836,7 +3696,6 @@
 							"# df = features\r\n",
 							"df"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 52
 					},
@@ -3851,8 +3710,7 @@
 						},
 						"source": [
 							"#### Test-Train Split"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -3872,7 +3730,6 @@
 							"test_date = dataset.iloc[-n:, 0:1]\r\n",
 							"train"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 6
 					},
@@ -3904,7 +3761,6 @@
 							"    data = pd.Series(data)\r\n",
 							"# predict"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3934,7 +3790,6 @@
 							"df = pd.read_csv(url,sep=\",\")\r\n",
 							"df['Consumption'].plot()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3966,7 +3821,6 @@
 							"#\r\n",
 							"print(ar_model.summary())"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -3987,7 +3841,6 @@
 							"test_data\r\n",
 							"test"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -4007,7 +3860,6 @@
 						"source": [
 							"model = ARIMA(train, order=(5,1,1))"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -4035,7 +3887,6 @@
 							"model_fit\r\n",
 							"# model_fit.summary()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 7
 					},
@@ -4055,7 +3906,6 @@
 						"source": [
 							"model_fit.forecast().values[0]"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 11
 					},
@@ -4089,7 +3939,6 @@
 							"    data = pd.Series(data)\r\n",
 							"# predict"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 13
 					},
@@ -4114,7 +3963,6 @@
 							"pyplot.show()\r\n",
 							"metric_table(test, predict)             # metric table"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 32
 					},
@@ -4129,8 +3977,7 @@
 						},
 						"source": [
 							"## Regression"
-						],
-						"attachments": null
+						]
 					},
 					{
 						"cell_type": "code",
@@ -4159,7 +4006,6 @@
 							"X = d[['day']]\r\n",
 							"y"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -4181,7 +4027,6 @@
 							"X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25, random_state = 0)\r\n",
 							"X_train"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 68
 					},
@@ -4204,7 +4049,6 @@
 							"X_train = sc.fit_transform(X_train)\r\n",
 							"X_test = sc.transform(X_test)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 69
 					},
@@ -4246,7 +4090,6 @@
 							"    model_MAE.append(mae)\r\n",
 							"    model_MSE.append(mse)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 70
 					},
@@ -4289,7 +4132,6 @@
 							"for model in models:\r\n",
 							"    evaluate(model)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 71
 					},
@@ -4315,7 +4157,6 @@
 							"    .background_gradient(\"Blues\",  subset=['R2'])\\\r\n",
 							"    .background_gradient(\"Blues_r\",  subset=['RMSE', 'MAE', 'MSE'])"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": null
 					},
@@ -4337,7 +4178,6 @@
 							"regressor = RandomForestRegressor(n_estimators = 100, random_state = 0)\r\n",
 							"regressor.fit(X_train, y_train)"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 72
 					},
@@ -4371,7 +4211,6 @@
 							"# df_result['diff'].total()\r\n",
 							"df_result"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 73
 					},
@@ -4398,7 +4237,6 @@
 							"plt.legend()\r\n",
 							"plt.show()"
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 76
 					},
@@ -4419,9 +4257,267 @@
 							"pip install -U scikit-learn\r\n",
 							""
 						],
-						"attachments": null,
 						"outputs": [],
 						"execution_count": 77
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"Connect to database - take brend"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# bckp \r\n",
+							"\r\n",
+							"# connect to database with credentials, execut SQL \r\n",
+							"item = 'STAVKE_NA_KOMIS_NALOGU'\r\n",
+							"brend = 'Grupno'\r\n",
+							"pushdown_query = \"(SELECT DATUM, {0} FROM src.komisionAggFinal ) {1}\".format(item,brend) \r\n",
+							"# pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ) Grupno\"\r\n",
+							"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+							"# display(df_spark)\r\n",
+							"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+							"\r\n",
+							"df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
+							"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+							"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+							"df\r\n",
+							"\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# bckp\r\n",
+							"\r\n",
+							"# prediction_contaier = None\r\n",
+							"\r\n",
+							"if 'prediction_contaier' not in locals():               # ako prediction_contaier ne postoji kreiraj ga od prve predikcije\r\n",
+							"    prediction_contaier = prediction\r\n",
+							"\r\n",
+							"if prediction_contaier is None:\r\n",
+							"    prediction_contaier = prediction\r\n",
+							"else:\r\n",
+							"  print(\"a and b are equal\")\r\n",
+							"#   pd.merge(prediction_contaier, prediction, left_index=True, right_index=True)\r\n",
+							"prediction_contaier = prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
+							"\r\n",
+							"prediction_contaier"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# prediction.reset_index(drop=False,inplace=True).set_index('DATUM')            # covert index to column\r\n",
+							"# prediction = prediction.reset_index().set_index('DATUM', drop=False)          # covert index to column but keep index\r\n",
+							"\r\n",
+							"prediction_contaier['DATUM'] = prediction_contaier.index                      # covert index to column - other way\r\n",
+							"# sat DATUM column to be first\r\n",
+							"column_name = list(prediction_contaier.columns.values)\r\n",
+							"column_name_wo_datum = column_name\r\n",
+							"column_name_wo_datum.remove('DATUM')\r\n",
+							"prediction_contaier = prediction_contaier[['DATUM'] + column_name_wo_datum]\r\n",
+							"\r\n",
+							"\r\n",
+							"\r\n",
+							"# prediction_contaier = prediction_contaier[[column_name[-1]] + column_name[:-1]]\r\n",
+							"\r\n",
+							"prediction_contaier.head()\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# # Output using Spark\r\n",
+							"# folder_name = \"Fererro\"\r\n",
+							"# (pandas_to_spark(prediction2)\r\n",
+							"#  .coalesce(1)\r\n",
+							"#  .write\r\n",
+							"#  .mode(\"overwrite\")\r\n",
+							"#  .option(\"header\", \"true\")\r\n",
+							"#  .format(\"com.databricks.spark.csv\")\r\n",
+							"#  .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/Komision_stavke/' + folder_name))"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# covert pandadf to spark df\r\n",
+							"prediction_spark = sqlContext.createDataFrame(prediction_contaier)            # convert pandadf to spark df\r\n",
+							"display(prediction_spark)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Train ARIMA model and prediction"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"n = 19\r\n",
+							"order = [28,0,0]\r\n",
+							"order = [3,0,0]\r\n",
+							"model = ARIMA(df, order=(order))\r\n",
+							"model_fit = model.fit()\r\n",
+							"prediction = model_fit.forecast(n)\r\n",
+							"\r\n",
+							"# korekcije\r\n",
+							"prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
+							"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
+							"prediction = prediction.rename(columns={'predicted_mean': item})        # set the name of column as item\r\n",
+							"prediction.head()\r\n",
+							"\r\n",
+							"# ako prediction_contaier ne postoji kreiraj ga od prve predikcije, u suprotnom dodaj novu predikciju na prediction_contaier\r\n",
+							"if 'prediction_contaier' not in locals():               \r\n",
+							"    prediction_contaier = prediction\r\n",
+							"else:\r\n",
+							"    prediction_contaier = prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
+							"prediction_contaier.head()"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Import dataset"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# connect to database with credentials, execut SQL \r\n",
+							"# STAVKE_NA_KOMIS_NALOGU, KOMIS_NALOG, POVRAT_KARTON, POVRAT_KOMAD,  komisionAggFinal,  povratAggFinal\r\n",
+							"item = 'STAVKE_NA_KOMIS_NALOGU'\r\n",
+							"brend = 'Grupno'\r\n",
+							"table = 'src.komisionAggFinal'\r\n",
+							"\r\n",
+							"pushdown_query = \"(SELECT DATUM, {0} FROM {2} ) {1}\".format(item,brend,table) \r\n",
+							"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+							"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+							"\r\n",
+							"df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
+							"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+							"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+							"df.head(2)\r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": null
 					}
 				]
 			},
@@ -5152,7 +5248,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Notebook ML Model 2')]",
+			"name": "[concat(parameters('workspaceName'), '/Notebook ML Model')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -5172,7 +5268,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e38b185d-4cb3-4a7f-afa5-bc0bc13ca74a"
+						"spark.autotune.trackingId": "a4358a64-40a9-42b0-bd0b-e8f8e109821a"
 					}
 				},
 				"metadata": {
@@ -5257,7 +5353,7 @@
 							"print('lib are imported')"
 						],
 						"outputs": [],
-						"execution_count": 55
+						"execution_count": 591
 					},
 					{
 						"cell_type": "markdown",
@@ -5316,7 +5412,7 @@
 							"  return df_result"
 						],
 						"outputs": [],
-						"execution_count": 56
+						"execution_count": 592
 					},
 					{
 						"cell_type": "markdown",
@@ -5358,7 +5454,7 @@
 							"  return df"
 						],
 						"outputs": [],
-						"execution_count": 57
+						"execution_count": 593
 					},
 					{
 						"cell_type": "markdown",
@@ -5370,63 +5466,7 @@
 							}
 						},
 						"source": [
-							"### Panda to spark function"
-						]
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"from pyspark.sql.types import *\r\n",
-							"\r\n",
-							"# Auxiliar functions\r\n",
-							"def equivalent_type(f):\r\n",
-							"    if f == 'datetime64[ns]': return TimestampType()\r\n",
-							"    elif f == 'int64': return LongType()\r\n",
-							"    elif f == 'int32': return IntegerType()\r\n",
-							"    elif f == 'float64': return DoubleType()\r\n",
-							"    elif f == 'float32': return FloatType()\r\n",
-							"    else: return StringType()\r\n",
-							"\r\n",
-							"def define_structure(string, format_type):\r\n",
-							"    try: typo = equivalent_type(format_type)\r\n",
-							"    except: typo = StringType()\r\n",
-							"    return StructField(string, typo)\r\n",
-							"\r\n",
-							"# Given pandas dataframe, it will return a spark's dataframe.\r\n",
-							"def pandas_to_spark(pandas_df):\r\n",
-							"    columns = list(pandas_df.columns)\r\n",
-							"    types = list(pandas_df.dtypes)\r\n",
-							"    struct_list = []\r\n",
-							"    for column, typo in zip(columns, types): \r\n",
-							"      struct_list.append(define_structure(column, typo))\r\n",
-							"    p_schema = StructType(struct_list)\r\n",
-							"    return sqlContext.createDataFrame(pandas_df, p_schema)"
-						],
-						"outputs": [],
-						"execution_count": null
-					},
-					{
-						"cell_type": "markdown",
-						"metadata": {
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"#### Import dataset"
+							"#### Azure database connection string"
 						]
 					},
 					{
@@ -5434,7 +5474,7 @@
 						"metadata": {
 							"jupyter": {
 								"source_hidden": true,
-								"outputs_hidden": false
+								"outputs_hidden": true
 							},
 							"nteract": {
 								"transient": {
@@ -5457,7 +5497,7 @@
 							"}"
 						],
 						"outputs": [],
-						"execution_count": 58
+						"execution_count": 594
 					},
 					{
 						"cell_type": "markdown",
@@ -5469,7 +5509,7 @@
 							}
 						},
 						"source": [
-							"### Loop brends"
+							"### Create arima function"
 						]
 					},
 					{
@@ -5483,23 +5523,77 @@
 								"transient": {
 									"deleting": false
 								}
-							},
-							"collapsed": false
+							}
 						},
 						"source": [
-							"# connect to database with credentials, execut SQL \r\n",
-							"pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ) Grupno\"\r\n",
-							"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
-							"# display(df_spark)\r\n",
-							"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+							"def arima(df):\r\n",
+							"    n = 30\r\n",
+							"    order = [28,0,0]\r\n",
+							"    order = [3,0,0]\r\n",
+							"    model = ARIMA(df, order=(order))\r\n",
+							"    model_fit = model.fit()\r\n",
+							"    prediction = model_fit.forecast(n)\r\n",
 							"\r\n",
-							"df.set_index('DATUM', inplace=True)\r\n",
-							"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
-							"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
-							"df"
+							"    # korekcije\r\n",
+							"    prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
+							"    prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
+							"    prediction = prediction.rename(columns={'predicted_mean': item})        # set the name of column as item\r\n",
+							"    prediction.head()\r\n",
+							"\r\n",
+							"    # ako prediction_contaier ne postoji kreiraj ga od prve predikcije, u suprotnom dodaj novu predikciju na prediction_contaier\r\n",
+							"    if 'prediction_contaier' not in globals():  \r\n",
+							"        # print('not exist')   \r\n",
+							"        global prediction_contaier          \r\n",
+							"        prediction_contaier = prediction\r\n",
+							"    else:\r\n",
+							"        # print('exist')             \r\n",
+							"        prediction_contaier =  prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
+							"    return prediction_contaier"
 						],
 						"outputs": [],
-						"execution_count": 59
+						"execution_count": 595
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"#### Create import dataset total function"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"def import_ds_total(item, brend, table):\r\n",
+							"    pushdown_query = \"(SELECT DATUM, {0} FROM {2} ) {1}\".format(item,brend,table) \r\n",
+							"    df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+							"    df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+							"\r\n",
+							"    df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
+							"    df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+							"    df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+							"    df.head(2)\r\n",
+							"    return df \r\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 596
 					},
 					{
 						"cell_type": "markdown",
@@ -5518,6 +5612,56 @@
 						"cell_type": "code",
 						"metadata": {
 							"jupyter": {
+								"source_hidden": true,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# n = 19\r\n",
+							"# order = [28,0,0]\r\n",
+							"# order = [3,0,0]\r\n",
+							"# model = ARIMA(df, order=(order))\r\n",
+							"# model_fit = model.fit()\r\n",
+							"# prediction = model_fit.forecast(n)\r\n",
+							"\r\n",
+							"# # korekcije\r\n",
+							"# prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
+							"# prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
+							"# prediction = prediction.rename(columns={'predicted_mean': item})        # set the name of column as item\r\n",
+							"# prediction.head()\r\n",
+							"\r\n",
+							"# # ako prediction_contaier ne postoji kreiraj ga od prve predikcije, u suprotnom dodaj novu predikciju na prediction_contaier\r\n",
+							"# if 'prediction_contaier' not in locals():               \r\n",
+							"#     prediction_contaier = prediction\r\n",
+							"# else:\r\n",
+							"#     prediction_contaier = prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
+							"# prediction_contaier.head()"
+						],
+						"outputs": [],
+						"execution_count": 597
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Delete prediction_container"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
 								"source_hidden": false,
 								"outputs_hidden": false
 							},
@@ -5528,23 +5672,186 @@
 							}
 						},
 						"source": [
-							"n = 19\r\n",
-							"\r\n",
-							"order = [28,0,0]\r\n",
-							"model = ARIMA(df, order=(order))\r\n",
-							"model_fit = model.fit()\r\n",
-							"prediction = model_fit.forecast(n)\r\n",
-							"\r\n",
-							"if not isinstance(prediction.index[0], datetime):               # ako index nije datum pretvori ga u datum\r\n",
-							"  prediction = prediction.to_frame().set_index(test.index)      # move series to dataframe and set index as test datum\r\n",
-							"\r\n",
-							"# korekcije\r\n",
-							"prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
-							"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
-							"prediction"
+							"if 'prediction_contaier' in globals(): \r\n",
+							"    del prediction_contaier\r\n",
+							"    print('deleted')"
 						],
 						"outputs": [],
-						"execution_count": 62
+						"execution_count": 598
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Loop brends - import dataset and applay arima (using custom function)"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# connect to database with credentials, execut SQL \r\n",
+							"# STAVKE_NA_KOMIS_NALOGU, KOMIS_NALOG, POVRAT_KARTON, POVRAT_KOMAD,  komisionAggFinal,  povratAggFinal\r\n",
+							"item = 'STAVKE_NA_KOMIS_NALOGU'\r\n",
+							"brend = 'Grupno'\r\n",
+							"table = 'src.komisionAggFinal'\r\n",
+							"df = import_ds_total(item, brend, table)\r\n",
+							"\r\n",
+							"# call arima function on dataset\r\n",
+							"prediction_contaier = arima(df)\r\n",
+							"prediction_contaier.head(2)"
+						],
+						"outputs": [],
+						"execution_count": 599
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							},
+							"collapsed": false
+						},
+						"source": [
+							"# connect to database with credentials, execut SQL \r\n",
+							"item = 'KOMIS_NALOG'\r\n",
+							"brend = 'Grupno'\r\n",
+							"table = 'src.komisionAggFinal'\r\n",
+							"df = import_ds_total(item, brend, table)\r\n",
+							"\r\n",
+							"# call custom arima function on dataset\r\n",
+							"prediction_contaier = arima(df)\r\n",
+							"prediction_contaier.head(2)"
+						],
+						"outputs": [],
+						"execution_count": 600
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# connect to database with credentials, execut SQL \r\n",
+							"item = 'POVRAT_KARTON'\r\n",
+							"brend = 'Grupno'\r\n",
+							"table = 'src.povratAggFinal'\r\n",
+							"df = import_ds_total(item, brend, table)\r\n",
+							"\r\n",
+							"# call arima function on dataset\r\n",
+							"prediction_contaier = arima(df)\r\n",
+							"prediction_contaier.head(2)"
+						],
+						"outputs": [],
+						"execution_count": 601
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# connect to database with credentials, execut SQL \r\n",
+							"item = 'POVRAT_KOMAD'\r\n",
+							"brend = 'Grupno'\r\n",
+							"table = 'src.povratAggFinal'\r\n",
+							"df = import_ds_total(item, brend, table)\r\n",
+							"\r\n",
+							"# call arima function on dataset\r\n",
+							"prediction_contaier = arima(df)\r\n",
+							"prediction_contaier.head(2)"
+						],
+						"outputs": [],
+						"execution_count": 602
+					},
+					{
+						"cell_type": "markdown",
+						"metadata": {
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"### Covert prediction_contaier index to column and store on blob storage"
+						]
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"# covert index to column\r\n",
+							"prediction_contaier['DATUM'] = prediction_contaier.index                      \r\n",
+							"# sat DATUM column to be first\r\n",
+							"column_name = list(prediction_contaier.columns.values)\r\n",
+							"column_name_wo_datum = column_name\r\n",
+							"column_name_wo_datum.remove('DATUM')\r\n",
+							"prediction_contaier = prediction_contaier[['DATUM'] + column_name_wo_datum]\r\n",
+							"prediction_contaier.head()\r\n",
+							"\r\n",
+							"\r\n",
+							"# Output using Spark\r\n",
+							"folder_name = brend\r\n",
+							"(sqlContext.createDataFrame(prediction_contaier)\r\n",
+							" .coalesce(1)\r\n",
+							" .write\r\n",
+							" .mode(\"overwrite\")\r\n",
+							" .option(\"header\", \"true\")\r\n",
+							" .format(\"com.databricks.spark.csv\")\r\n",
+							" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
+						],
+						"outputs": [],
+						"execution_count": 603
 					},
 					{
 						"cell_type": "markdown",
@@ -5573,442 +5880,13 @@
 							}
 						},
 						"source": [
-							"pyplot.figure(figsize=(18, 6), dpi=80)       # adjust graph size\r\n",
-							"pyplot.plot(prediction, color='red', label='prediction')\r\n",
-							"pyplot.legend(loc=\"upper left\")\r\n",
-							"pyplot.show()"
+							"# pyplot.figure(figsize=(18, 6), dpi=80)       # adjust graph size\r\n",
+							"# pyplot.plot(prediction, color='red', label='prediction')\r\n",
+							"# pyplot.legend(loc=\"upper left\")\r\n",
+							"# pyplot.show()"
 						],
 						"outputs": [],
-						"execution_count": 63
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"collapsed": false
-						},
-						"source": [
-							"a = pandas_to_spark(prediction)\r\n",
-							"display(a)"
-						],
-						"outputs": [],
-						"execution_count": 67
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"prediction2 = prediction\r\n",
-							"prediction2['DATUM'] = prediction2.index\r\n",
-							"prediction2 = prediction2[['DATUM', 'predicted_mean']]\r\n",
-							"prediction2"
-						],
-						"outputs": [],
-						"execution_count": null
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"# Output using Spark\r\n",
-							"folder_name = \"Fererro\"\r\n",
-							"(pandas_to_spark(prediction2)\r\n",
-							" .coalesce(1)\r\n",
-							" .write\r\n",
-							" .mode(\"overwrite\")\r\n",
-							" .option(\"header\", \"true\")\r\n",
-							" .format(\"com.databricks.spark.csv\")\r\n",
-							" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/Komision_stavke/' + folder_name))"
-						],
-						"outputs": [],
-						"execution_count": 86
-					}
-				]
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/Notebook ML Model')]",
-			"type": "Microsoft.Synapse/workspaces/notebooks",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"folder": {
-					"name": "Archive"
-				},
-				"nbformat": 4,
-				"nbformat_minor": 2,
-				"bigDataPool": {
-					"referenceName": "SparkSmall",
-					"type": "BigDataPoolReference"
-				},
-				"sessionProperties": {
-					"driverMemory": "28g",
-					"driverCores": 4,
-					"executorMemory": "28g",
-					"executorCores": 4,
-					"numExecutors": 2,
-					"conf": {
-						"spark.dynamicAllocation.enabled": "false",
-						"spark.dynamicAllocation.minExecutors": "2",
-						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "f56b8784-1956-4b1b-bb39-2de6f7e4cf72"
-					}
-				},
-				"metadata": {
-					"saveOutput": true,
-					"synapse_widget": {
-						"version": "0.1"
-					},
-					"enableDebugMode": false,
-					"kernelspec": {
-						"name": "synapse_pyspark",
-						"display_name": "Synapse PySpark"
-					},
-					"language_info": {
-						"name": "python"
-					},
-					"a365ComputeOptions": {
-						"id": "/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Synapse/workspaces/synapsedtsws/bigDataPools/SparkSmall",
-						"name": "SparkSmall",
-						"type": "Spark",
-						"endpoint": "https://synapsedtsws.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/SparkSmall",
-						"auth": {
-							"type": "AAD",
-							"authResource": "https://dev.azuresynapse.net"
-						},
-						"sparkVersion": "3.1",
-						"nodeCount": 10,
-						"cores": 4,
-						"memory": 28,
-						"extraHeader": null
-					},
-					"sessionKeepAliveTimeout": 300
-				},
-				"cells": [
-					{
-						"cell_type": "code",
-						"source": [
-							"print('hello DTS')\r\n",
-							"\r\n",
-							"p = 'marko poparko'\r\n",
-							"\r\n",
-							"def myF():\r\n",
-							"    return print(p)\r\n",
-							"\r\n",
-							"myF()\r\n",
-							"\r\n",
-							"\r\n",
-							""
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 1
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"from pyspark.sql import SparkSession\r\n",
-							"from pyspark.sql.types import *\r\n",
-							"account_name = \"dlsynapsedts\"\r\n",
-							"container_name = \"processed\"\r\n",
-							"relative_path = \"\"\r\n",
-							"adls_path = 'abfss://%s@%s.dfs.core.windows.net/%s' % (container_name, account_name, relative_path)\r\n",
-							"# adls_path = 'https://dlsynapsedts.blob.core.windows.net/processed/DMD_dataset.csv' % (container_name, account_name, relative_path)\r\n",
-							"\r\n",
-							"df1 = spark.read.option('header', 'true') \\\r\n",
-							"                .option('delimiter', ',') \\\r\n",
-							"                .csv(adls_path + '/DMD_dataset.csv')"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": null
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							},
-							"microsoft": {
-								"language": "python"
-							}
-						},
-						"source": [
-							"%%pyspark\r\n",
-							"df = spark.read.load('abfss://processed@dlsynapsedts.dfs.core.windows.net/DMD_dataset.csv', format='csv'\r\n",
-							"## If header exists uncomment line below\r\n",
-							"##, header=True\r\n",
-							")\r\n",
-							"display(df.limit(10))"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": null
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"import pandas as pd\r\n",
-							"import numpy as np\r\n",
-							"\r\n",
-							"from dateutil.parser import parse \r\n",
-							"import matplotlib as mpl\r\n",
-							"import matplotlib.pyplot as plt\r\n",
-							"import matplotlib.pyplot as pyplot\r\n",
-							"import seaborn as sns\r\n",
-							"\r\n",
-							"from datetime import datetime\r\n",
-							"\r\n",
-							"import warnings\r\n",
-							"warnings.simplefilter(\"ignore\")\r\n",
-							"\r\n",
-							"from datetime import datetime\r\n",
-							"import time\r\n",
-							"import math\r\n",
-							"from sklearn.ensemble import RandomForestRegressor\r\n",
-							"from sklearn.linear_model import LinearRegression\r\n",
-							"from sklearn.preprocessing import PolynomialFeatures\r\n",
-							"from sklearn.tree import DecisionTreeRegressor\r\n",
-							"from sklearn.model_selection import cross_val_score\r\n",
-							"from sklearn.svm import SVR\r\n",
-							"from sklearn.linear_model import LogisticRegression\r\n",
-							"from sklearn.linear_model import Ridge\r\n",
-							"from sklearn.linear_model import Lasso\r\n",
-							"from sklearn import neighbors\r\n",
-							"from xgboost import XGBRegressor \r\n",
-							"\r\n",
-							"from pandas.plotting import autocorrelation_plot\r\n",
-							"\r\n",
-							"\r\n",
-							"# from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error   # metrics\r\n",
-							"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
-							"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
-							"from statsmodels.tsa.ar_model import AR\r\n",
-							"from statsmodels.tsa.arima_model import ARIMA\r\n",
-							"from statsmodels.tsa.statespace.sarimax import SARIMAX\r\n",
-							"# from statsmodels.tsa.ar_model import AutoReg\r\n",
-							"# from statsmodels.tsa.arima.model import ARIMA\r\n",
-							"# import pmdarima as pm\r\n",
-							"\r\n",
-							"\r\n",
-							"plt.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
-							"print('jes imported jeeee :D')"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 15
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"def metric_table(test, predictions):\r\n",
-							"    \r\n",
-							"  mse = mean_squared_error(test, predictions)\r\n",
-							"  model_r2, model_RMSE, model_MAE, model_MSE, model_MAPE, model_Adj_R2 = [], [], [], [], [], []\r\n",
-							"\r\n",
-							"\r\n",
-							"  r2 = r2_score(test, predictions)\r\n",
-							"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
-							"  mae = mean_absolute_error(test, predictions)\r\n",
-							"  mse = mean_squared_error(test, predictions)\r\n",
-							"  mape = mean_absolute_percentage_error(test, predictions)\r\n",
-							"\r\n",
-							"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
-							"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
-							"\r\n",
-							"  model_r2.append(r2)\r\n",
-							"  model_RMSE.append(rmse)\r\n",
-							"  model_MAE.append(mae)\r\n",
-							"  model_MSE.append(mse)\r\n",
-							"  model_MAPE.append(mape)\r\n",
-							"  model_Adj_R2.append(adj_r2)\r\n",
-							"\r\n",
-							"\r\n",
-							"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE, \"MAPE\": model_MAPE})\r\n",
-							"  df_result = round(df_result,3)\r\n",
-							"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
-							"  df_result\r\n",
-							"  return df_result"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 9
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 11
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"# data = sc.parallelize(list(\"Hello World\"))\r\n",
-							"sc.parallelize(list(\"Hello World\"))"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 4
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"pip install -U scikit-learn"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 12
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"import requests\r\n",
-							"import pandas as pd\r\n",
-							"\r\n",
-							"url = 'https://www.cmegroup.com/CmeWS/mvc/Volume/Details/F/8478/20200807/F?tradeDate=20200807'\r\n",
-							"r = requests.get(url)\r\n",
-							"dj = r.json()\r\n",
-							"        \r\n",
-							"df = pd.DataFrame(dj['monthData'])\r\n",
-							"# df.to_csv('out.csv', index=False)"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": 11
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"jupyter": {
-								"source_hidden": false,
-								"outputs_hidden": false
-							},
-							"nteract": {
-								"transient": {
-									"deleting": false
-								}
-							}
-						},
-						"source": [
-							"df"
-						],
-						"attachments": null,
-						"outputs": [],
-						"execution_count": null
+						"execution_count": 604
 					}
 				]
 			},
