@@ -1,5 +1,5 @@
 {
-	"name": "Notebook ML Model",
+	"name": "Notebook ML Model arch",
 	"properties": {
 		"folder": {
 			"name": "Archive"
@@ -20,14 +20,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f56b8784-1956-4b1b-bb39-2de6f7e4cf72"
+				"spark.autotune.trackingId": "c11096ee-7233-45c7-81ce-137d3a96ca43"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -49,7 +46,7 @@
 				"nodeCount": 10,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 300
 		},
@@ -69,7 +66,6 @@
 					"\r\n",
 					""
 				],
-				"attachments": null,
 				"execution_count": 1
 			},
 			{
@@ -98,7 +94,6 @@
 					"                .option('delimiter', ',') \\\r\n",
 					"                .csv(adls_path + '/DMD_dataset.csv')"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -125,7 +120,6 @@
 					")\r\n",
 					"display(df.limit(10))"
 				],
-				"attachments": null,
 				"execution_count": null
 			},
 			{
@@ -188,7 +182,6 @@
 					"plt.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('jes imported jeeee :D')"
 				],
-				"attachments": null,
 				"execution_count": 15
 			},
 			{
@@ -234,7 +227,6 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"attachments": null,
 				"execution_count": 9
 			},
 			{
@@ -253,7 +245,6 @@
 				"source": [
 					"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, mean_absolute_percentage_error"
 				],
-				"attachments": null,
 				"execution_count": 11
 			},
 			{
@@ -273,7 +264,6 @@
 					"# data = sc.parallelize(list(\"Hello World\"))\r\n",
 					"sc.parallelize(list(\"Hello World\"))"
 				],
-				"attachments": null,
 				"execution_count": 4
 			},
 			{
@@ -292,7 +282,6 @@
 				"source": [
 					"pip install -U scikit-learn"
 				],
-				"attachments": null,
 				"execution_count": 12
 			},
 			{
@@ -319,7 +308,6 @@
 					"df = pd.DataFrame(dj['monthData'])\r\n",
 					"# df.to_csv('out.csv', index=False)"
 				],
-				"attachments": null,
 				"execution_count": 11
 			},
 			{
@@ -338,7 +326,6 @@
 				"source": [
 					"df"
 				],
-				"attachments": null,
 				"execution_count": null
 			}
 		]
