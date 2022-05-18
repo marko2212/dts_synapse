@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d0d3b62a-ee58-48e5-9596-457e11ec33cd"
+				"spark.autotune.trackingId": "a4358a64-40a9-42b0-bd0b-e8f8e109821a"
 			}
 		},
 		"metadata": {
@@ -160,7 +160,7 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"execution_count": null
+				"execution_count": 592
 			},
 			{
 				"cell_type": "markdown",
@@ -201,7 +201,7 @@
 					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
 					"  return df"
 				],
-				"execution_count": null
+				"execution_count": 593
 			},
 			{
 				"cell_type": "markdown",
@@ -243,7 +243,7 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"execution_count": null
+				"execution_count": 594
 			},
 			{
 				"cell_type": "markdown",
@@ -296,7 +296,7 @@
 					"        prediction_contaier =  prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
 					"    return prediction_contaier"
 				],
-				"execution_count": null
+				"execution_count": 595
 			},
 			{
 				"cell_type": "markdown",
@@ -337,7 +337,7 @@
 					"    return df \r\n",
 					""
 				],
-				"execution_count": null
+				"execution_count": 596
 			},
 			{
 				"cell_type": "markdown",
@@ -386,7 +386,7 @@
 					"#     prediction_contaier = prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
 					"# prediction_contaier.head()"
 				],
-				"execution_count": null
+				"execution_count": 597
 			},
 			{
 				"cell_type": "markdown",
@@ -419,7 +419,7 @@
 					"    del prediction_contaier\r\n",
 					"    print('deleted')"
 				],
-				"execution_count": 584
+				"execution_count": 598
 			},
 			{
 				"cell_type": "markdown",
@@ -460,7 +460,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 585
+				"execution_count": 599
 			},
 			{
 				"cell_type": "code",
@@ -487,7 +487,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 586
+				"execution_count": 600
 			},
 			{
 				"cell_type": "code",
@@ -513,7 +513,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 587
+				"execution_count": 601
 			},
 			{
 				"cell_type": "code",
@@ -539,7 +539,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 588
+				"execution_count": 602
 			},
 			{
 				"cell_type": "markdown",
@@ -588,7 +588,7 @@
 					" .format(\"com.databricks.spark.csv\")\r\n",
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
 				],
-				"execution_count": 589
+				"execution_count": 603
 			},
 			{
 				"cell_type": "markdown",
@@ -622,7 +622,7 @@
 					"# pyplot.legend(loc=\"upper left\")\r\n",
 					"# pyplot.show()"
 				],
-				"execution_count": 590
+				"execution_count": 604
 			}
 		]
 	}
