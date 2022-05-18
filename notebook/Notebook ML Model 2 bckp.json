@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "99de1b8c-508e-43d0-a6d2-e8cfc45b5090"
+				"spark.autotune.trackingId": "0875eeaa-2bf5-4ba3-94da-0acb54eeb25d"
 			}
 		},
 		"metadata": {
@@ -544,6 +544,25 @@
 					"      struct_list.append(define_structure(column, typo))\r\n",
 					"    p_schema = StructType(struct_list)\r\n",
 					"    return sqlContext.createDataFrame(pandas_df, p_schema)"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"a = pandas_to_spark(prediction)\r\n",
+					"display(a)"
 				],
 				"execution_count": null
 			},
@@ -1201,6 +1220,118 @@
 					""
 				],
 				"execution_count": 77
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"Connect to database - take brend"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# bckp \r\n",
+					"\r\n",
+					"# connect to database with credentials, execut SQL \r\n",
+					"item = 'STAVKE_NA_KOMIS_NALOGU'\r\n",
+					"brend = 'Grupno'\r\n",
+					"pushdown_query = \"(SELECT DATUM, {0} FROM src.komisionAggFinal ) {1}\".format(item,brend) \r\n",
+					"# pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ) Grupno\"\r\n",
+					"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
+					"# display(df_spark)\r\n",
+					"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+					"\r\n",
+					"df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
+					"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+					"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+					"df\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# bckp\r\n",
+					"\r\n",
+					"# prediction_contaier = None\r\n",
+					"\r\n",
+					"if 'prediction_contaier' not in locals():               # ako prediction_contaier ne postoji kreiraj ga od prve predikcije\r\n",
+					"    prediction_contaier = prediction\r\n",
+					"\r\n",
+					"if prediction_contaier is None:\r\n",
+					"    prediction_contaier = prediction\r\n",
+					"else:\r\n",
+					"  print(\"a and b are equal\")\r\n",
+					"#   pd.merge(prediction_contaier, prediction, left_index=True, right_index=True)\r\n",
+					"prediction_contaier = prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
+					"\r\n",
+					"prediction_contaier"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# prediction.reset_index(drop=False,inplace=True).set_index('DATUM')            # covert index to column\r\n",
+					"# prediction = prediction.reset_index().set_index('DATUM', drop=False)          # covert index to column but keep index\r\n",
+					"\r\n",
+					"prediction_contaier['DATUM'] = prediction_contaier.index                      # covert index to column - other way\r\n",
+					"# sat DATUM column to be first\r\n",
+					"column_name = list(prediction_contaier.columns.values)\r\n",
+					"column_name_wo_datum = column_name\r\n",
+					"column_name_wo_datum.remove('DATUM')\r\n",
+					"prediction_contaier = prediction_contaier[['DATUM'] + column_name_wo_datum]\r\n",
+					"\r\n",
+					"\r\n",
+					"\r\n",
+					"# prediction_contaier = prediction_contaier[[column_name[-1]] + column_name[:-1]]\r\n",
+					"\r\n",
+					"prediction_contaier.head()\r\n",
+					""
+				],
+				"execution_count": null
 			}
 		]
 	}
