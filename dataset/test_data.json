@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "NF-UQ-NIDS-v2_11_1.csv",
+				"fileName": "NF-UQ-NIDS-v2_11.csv",
 				"folderPath": "dmd/test",
 				"fileSystem": "row"
 			},
