@@ -506,7 +506,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "SqlPoolTable1",
+						"referenceName": "ds_SqlPoolTable1",
 						"type": "DatasetReference"
 					}
 				]

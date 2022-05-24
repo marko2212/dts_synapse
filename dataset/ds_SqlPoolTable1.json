@@ -1,5 +1,5 @@
 {
-	"name": "SqlPoolTable1",
+	"name": "ds_SqlPoolTable1",
 	"properties": {
 		"annotations": [],
 		"type": "SqlPoolTable",
