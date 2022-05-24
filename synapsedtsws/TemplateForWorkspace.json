@@ -5268,7 +5268,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "a4358a64-40a9-42b0-bd0b-e8f8e109821a"
+						"spark.autotune.trackingId": "bd98ab69-4b8c-4950-a37a-3fb5a41e38b2"
 					}
 				},
 				"metadata": {
@@ -5293,7 +5293,8 @@
 						"sparkVersion": "3.1",
 						"nodeCount": 10,
 						"cores": 4,
-						"memory": 28
+						"memory": 28,
+						"automaticScaleJobs": false
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -5952,6 +5953,1772 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/managedVirtualNetworks/default')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/test_data')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_dl_asa_dts",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "NF-UQ-NIDS-v2_11.csv",
+						"folderPath": "dmd/test",
+						"fileSystem": "row"
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\"",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "IPV4_SRC_ADDR",
+						"type": "String"
+					},
+					{
+						"name": "L4_SRC_PORT",
+						"type": "String"
+					},
+					{
+						"name": "IPV4_DST_ADDR",
+						"type": "String"
+					},
+					{
+						"name": "L4_DST_PORT",
+						"type": "String"
+					},
+					{
+						"name": "PROTOCOL",
+						"type": "String"
+					},
+					{
+						"name": "L7_PROTO",
+						"type": "String"
+					},
+					{
+						"name": "IN_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "IN_PKTS",
+						"type": "String"
+					},
+					{
+						"name": "OUT_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "OUT_PKTS",
+						"type": "String"
+					},
+					{
+						"name": "TCP_FLAGS",
+						"type": "String"
+					},
+					{
+						"name": "CLIENT_TCP_FLAGS",
+						"type": "String"
+					},
+					{
+						"name": "SERVER_TCP_FLAGS",
+						"type": "String"
+					},
+					{
+						"name": "FLOW_DURATION_MILLISECONDS",
+						"type": "String"
+					},
+					{
+						"name": "DURATION_IN",
+						"type": "String"
+					},
+					{
+						"name": "DURATION_OUT",
+						"type": "String"
+					},
+					{
+						"name": "MIN_TTL",
+						"type": "String"
+					},
+					{
+						"name": "MAX_TTL",
+						"type": "String"
+					},
+					{
+						"name": "LONGEST_FLOW_PKT",
+						"type": "String"
+					},
+					{
+						"name": "SHORTEST_FLOW_PKT",
+						"type": "String"
+					},
+					{
+						"name": "MIN_IP_PKT_LEN",
+						"type": "String"
+					},
+					{
+						"name": "MAX_IP_PKT_LEN",
+						"type": "String"
+					},
+					{
+						"name": "SRC_TO_DST_SECOND_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "DST_TO_SRC_SECOND_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "RETRANSMITTED_IN_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "RETRANSMITTED_IN_PKTS",
+						"type": "String"
+					},
+					{
+						"name": "RETRANSMITTED_OUT_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "RETRANSMITTED_OUT_PKTS",
+						"type": "String"
+					},
+					{
+						"name": "SRC_TO_DST_AVG_THROUGHPUT",
+						"type": "String"
+					},
+					{
+						"name": "DST_TO_SRC_AVG_THROUGHPUT",
+						"type": "String"
+					},
+					{
+						"name": "NUM_PKTS_UP_TO_128_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "NUM_PKTS_128_TO_256_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "NUM_PKTS_256_TO_512_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "NUM_PKTS_512_TO_1024_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "NUM_PKTS_1024_TO_1514_BYTES",
+						"type": "String"
+					},
+					{
+						"name": "TCP_WIN_MAX_IN",
+						"type": "String"
+					},
+					{
+						"name": "TCP_WIN_MAX_OUT",
+						"type": "String"
+					},
+					{
+						"name": "ICMP_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "ICMP_IPV4_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "DNS_QUERY_ID",
+						"type": "String"
+					},
+					{
+						"name": "DNS_QUERY_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "DNS_TTL_ANSWER",
+						"type": "String"
+					},
+					{
+						"name": "FTP_COMMAND_RET_CODE",
+						"type": "String"
+					},
+					{
+						"name": "Label",
+						"type": "String"
+					},
+					{
+						"name": "Attack",
+						"type": "String"
+					},
+					{
+						"name": "Dataset",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_dl_asa_dts')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 1')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://dlsynapsedts.dfs.core.windows.net/row/dmd/test/NF-UQ-NIDS-v2_11.csv',\n        FORMAT = 'CSV',\n        HEADER_ROW = TRUE,\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SQL script 2')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    count(*)\nFROM\n    OPENROWSET(\n        BULK 'https://dlsynapsedts.dfs.core.windows.net/row/dmd/test/NF-UQ-NIDS-v2_11.csv',\n        FORMAT = 'CSV',\n        PARSER_VERSION = '2.0'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_test_data_csv_dedicated')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data from csv to dedicated pool",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlPoolSink",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {},
+								"tableOption": "autoCreate"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "IPV4_SRC_ADDR",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IPV4_SRC_ADDR",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "L4_SRC_PORT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "L4_SRC_PORT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "IPV4_DST_ADDR",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IPV4_DST_ADDR",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "L4_DST_PORT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "L4_DST_PORT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "PROTOCOL",
+											"type": "String"
+										},
+										"sink": {
+											"name": "PROTOCOL",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "L7_PROTO",
+											"type": "String"
+										},
+										"sink": {
+											"name": "L7_PROTO",
+											"type": "Single"
+										}
+									},
+									{
+										"source": {
+											"name": "IN_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IN_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "IN_PKTS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "IN_PKTS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "OUT_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "OUT_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "OUT_PKTS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "OUT_PKTS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "TCP_FLAGS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "TCP_FLAGS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "CLIENT_TCP_FLAGS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "CLIENT_TCP_FLAGS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "SERVER_TCP_FLAGS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "SERVER_TCP_FLAGS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "FLOW_DURATION_MILLISECONDS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "FLOW_DURATION_MILLISECONDS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "DURATION_IN",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DURATION_IN",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "DURATION_OUT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DURATION_OUT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "MIN_TTL",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MIN_TTL",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "MAX_TTL",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MAX_TTL",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "LONGEST_FLOW_PKT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "LONGEST_FLOW_PKT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "SHORTEST_FLOW_PKT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "SHORTEST_FLOW_PKT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "MIN_IP_PKT_LEN",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MIN_IP_PKT_LEN",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "MAX_IP_PKT_LEN",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MAX_IP_PKT_LEN",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "SRC_TO_DST_SECOND_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "SRC_TO_DST_SECOND_BYTES",
+											"type": "Single"
+										}
+									},
+									{
+										"source": {
+											"name": "DST_TO_SRC_SECOND_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DST_TO_SRC_SECOND_BYTES",
+											"type": "Single"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_IN_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_IN_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_IN_PKTS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_IN_PKTS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_OUT_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_OUT_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_OUT_PKTS",
+											"type": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_OUT_PKTS",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "SRC_TO_DST_AVG_THROUGHPUT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "SRC_TO_DST_AVG_THROUGHPUT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "DST_TO_SRC_AVG_THROUGHPUT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DST_TO_SRC_AVG_THROUGHPUT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_UP_TO_128_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_UP_TO_128_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_128_TO_256_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_128_TO_256_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_256_TO_512_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_256_TO_512_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_512_TO_1024_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_512_TO_1024_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_1024_TO_1514_BYTES",
+											"type": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_1024_TO_1514_BYTES",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "TCP_WIN_MAX_IN",
+											"type": "String"
+										},
+										"sink": {
+											"name": "TCP_WIN_MAX_IN",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "TCP_WIN_MAX_OUT",
+											"type": "String"
+										},
+										"sink": {
+											"name": "TCP_WIN_MAX_OUT",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "ICMP_TYPE",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ICMP_TYPE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "ICMP_IPV4_TYPE",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ICMP_IPV4_TYPE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "DNS_QUERY_ID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DNS_QUERY_ID",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "DNS_QUERY_TYPE",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DNS_QUERY_TYPE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "DNS_TTL_ANSWER",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DNS_TTL_ANSWER",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "FTP_COMMAND_RET_CODE",
+											"type": "String"
+										},
+										"sink": {
+											"name": "FTP_COMMAND_RET_CODE",
+											"type": "Single"
+										}
+									},
+									{
+										"source": {
+											"name": "Label",
+											"type": "String"
+										},
+										"sink": {
+											"name": "LABEL_1",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "Attack",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ATTACK",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Dataset\r",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DATASET",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "test_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_SqlPoolTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/test_data')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_SqlPoolTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/smallPoolDed')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_SqlPoolTable1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "SqlPoolTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "test",
+					"table": "datatest"
+				},
+				"sqlPool": {
+					"referenceName": "smallPoolDed",
+					"type": "SqlPoolReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/sqlPools/smallPoolDed')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_test_data_csv_sql')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data from csv to dedicated pool",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "IPV4_SRC_ADDR",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "IPV4_SRC_ADDR",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "L4_SRC_PORT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "L4_SRC_PORT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "IPV4_DST_ADDR",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "IPV4_DST_ADDR",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "L4_DST_PORT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "L4_DST_PORT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "PROTOCOL",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "PROTOCOL",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "L7_PROTO",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "L7_PROTO",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "IN_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "IN_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "IN_PKTS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "IN_PKTS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "OUT_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "OUT_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "OUT_PKTS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "OUT_PKTS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "TCP_FLAGS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TCP_FLAGS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "CLIENT_TCP_FLAGS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "CLIENT_TCP_FLAGS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "SERVER_TCP_FLAGS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SERVER_TCP_FLAGS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "FLOW_DURATION_MILLISECONDS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "FLOW_DURATION_MILLISECONDS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "DURATION_IN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DURATION_IN",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "DURATION_OUT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DURATION_OUT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "MIN_TTL",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MIN_TTL",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "MAX_TTL",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MAX_TTL",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "LONGEST_FLOW_PKT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "LONGEST_FLOW_PKT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "SHORTEST_FLOW_PKT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SHORTEST_FLOW_PKT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "MIN_IP_PKT_LEN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MIN_IP_PKT_LEN",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "MAX_IP_PKT_LEN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "MAX_IP_PKT_LEN",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "SRC_TO_DST_SECOND_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SRC_TO_DST_SECOND_BYTES",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "DST_TO_SRC_SECOND_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DST_TO_SRC_SECOND_BYTES",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_IN_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_IN_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_IN_PKTS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_IN_PKTS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_OUT_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_OUT_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "RETRANSMITTED_OUT_PKTS",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "RETRANSMITTED_OUT_PKTS",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "SRC_TO_DST_AVG_THROUGHPUT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "SRC_TO_DST_AVG_THROUGHPUT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "DST_TO_SRC_AVG_THROUGHPUT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DST_TO_SRC_AVG_THROUGHPUT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_UP_TO_128_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_UP_TO_128_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_128_TO_256_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_128_TO_256_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_256_TO_512_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_256_TO_512_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_512_TO_1024_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_512_TO_1024_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "NUM_PKTS_1024_TO_1514_BYTES",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "NUM_PKTS_1024_TO_1514_BYTES",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "TCP_WIN_MAX_IN",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TCP_WIN_MAX_IN",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "TCP_WIN_MAX_OUT",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "TCP_WIN_MAX_OUT",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "ICMP_TYPE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ICMP_TYPE",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "ICMP_IPV4_TYPE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ICMP_IPV4_TYPE",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "DNS_QUERY_ID",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DNS_QUERY_ID",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "DNS_QUERY_TYPE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DNS_QUERY_TYPE",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "DNS_TTL_ANSWER",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DNS_TTL_ANSWER",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "FTP_COMMAND_RET_CODE",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "FTP_COMMAND_RET_CODE",
+											"type": "Double",
+											"physicalType": "float"
+										}
+									},
+									{
+										"source": {
+											"name": "Label",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "LABEL_1",
+											"type": "Int64",
+											"physicalType": "bigint"
+										}
+									},
+									{
+										"source": {
+											"name": "Attack",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "ATTACK",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "Dataset\r",
+											"type": "String",
+											"physicalType": "String"
+										},
+										"sink": {
+											"name": "DATASET",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "test_data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_sql_test_dataset",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/test_data')]",
+				"[concat(variables('workspaceId'), '/datasets/ds_sql_test_dataset')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/ds_sql_test_dataset')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_asql_db",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "IPV4_SRC_ADDR",
+						"type": "varchar"
+					},
+					{
+						"name": "L4_SRC_PORT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IPV4_DST_ADDR",
+						"type": "varchar"
+					},
+					{
+						"name": "L4_DST_PORT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PROTOCOL",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "L7_PROTO",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "IN_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "IN_PKTS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OUT_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "OUT_PKTS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCP_FLAGS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CLIENT_TCP_FLAGS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SERVER_TCP_FLAGS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FLOW_DURATION_MILLISECONDS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DURATION_IN",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DURATION_OUT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MIN_TTL",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MAX_TTL",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "LONGEST_FLOW_PKT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SHORTEST_FLOW_PKT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MIN_IP_PKT_LEN",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MAX_IP_PKT_LEN",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SRC_TO_DST_SECOND_BYTES",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "DST_TO_SRC_SECOND_BYTES",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RETRANSMITTED_IN_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "RETRANSMITTED_IN_PKTS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "RETRANSMITTED_OUT_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "RETRANSMITTED_OUT_PKTS",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SRC_TO_DST_AVG_THROUGHPUT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DST_TO_SRC_AVG_THROUGHPUT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NUM_PKTS_UP_TO_128_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NUM_PKTS_128_TO_256_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NUM_PKTS_256_TO_512_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NUM_PKTS_512_TO_1024_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NUM_PKTS_1024_TO_1514_BYTES",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCP_WIN_MAX_IN",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCP_WIN_MAX_OUT",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ICMP_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ICMP_IPV4_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DNS_QUERY_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DNS_QUERY_TYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DNS_TTL_ANSWER",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FTP_COMMAND_RET_CODE",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "LABEL_1",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ATTACK",
+						"type": "varchar"
+					},
+					{
+						"name": "DATASET",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "test",
+					"table": "datatest"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/ls_asql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_store_Classic_test')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Stored procedure1 to dedicated pool",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[proceduraTest]"
+						},
+						"linkedServiceName": {
+							"referenceName": "synapsedtsws-WorkspaceDefaultSqlServer",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"DBName": "smallPoolDed"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synapsedtsws-WorkspaceDefaultSqlServer')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/pip_store_proced_SQL_pool')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "SQL pool stored procedure1 test dedicted pool",
+						"type": "SqlPoolStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"sqlPool": {
+							"referenceName": "smallPoolDed",
+							"type": "SqlPoolReference"
+						},
+						"typeProperties": {
+							"storedProcedureName": "[dbo].[proceduraTest]"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/sqlPools/smallPoolDed')]"
 			]
 		}
 	]
