@@ -27,6 +27,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "DTS"
+		},
 		"annotations": [],
 		"lastPublishTime": "2022-05-12T12:06:32Z"
 	},

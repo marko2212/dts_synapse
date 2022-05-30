@@ -609,6 +609,9 @@
 				]
 			}
 		],
+		"folder": {
+			"name": "Test synapse"
+		},
 		"annotations": []
 	}
 }

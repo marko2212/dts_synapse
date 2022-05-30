@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "da4f79ff-e94d-4b0c-b5cb-57c70809657d"
+				"spark.autotune.trackingId": "0e1ec3dc-ac31-41d0-9387-25bb6ca20653"
 			}
 		},
 		"metadata": {
@@ -102,7 +102,7 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"execution_count": 591
+				"execution_count": 2
 			},
 			{
 				"cell_type": "markdown",
@@ -160,7 +160,7 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"execution_count": 592
+				"execution_count": 3
 			},
 			{
 				"cell_type": "markdown",
@@ -201,7 +201,7 @@
 					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
 					"  return df"
 				],
-				"execution_count": 593
+				"execution_count": 4
 			},
 			{
 				"cell_type": "markdown",
@@ -243,7 +243,7 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"execution_count": 594
+				"execution_count": 5
 			},
 			{
 				"cell_type": "markdown",
@@ -296,7 +296,7 @@
 					"        prediction_contaier =  prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
 					"    return prediction_contaier"
 				],
-				"execution_count": 595
+				"execution_count": 6
 			},
 			{
 				"cell_type": "markdown",
@@ -337,7 +337,7 @@
 					"    return df \r\n",
 					""
 				],
-				"execution_count": 596
+				"execution_count": 7
 			},
 			{
 				"cell_type": "markdown",
@@ -386,40 +386,7 @@
 					"#     prediction_contaier = prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
 					"# prediction_contaier.head()"
 				],
-				"execution_count": 597
-			},
-			{
-				"cell_type": "markdown",
-				"metadata": {
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"### Delete prediction_container"
-				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"if 'prediction_contaier' in globals(): \r\n",
-					"    del prediction_contaier\r\n",
-					"    print('deleted')"
-				],
-				"execution_count": 598
+				"execution_count": 8
 			},
 			{
 				"cell_type": "markdown",
@@ -445,22 +412,45 @@
 						"transient": {
 							"deleting": false
 						}
+					}
+				},
+				"source": [
+					"# Delete prediction_container\r\n",
+					"if 'prediction_contaier' in globals(): \r\n",
+					"    del prediction_contaier\r\n",
+					"    print('deleted')\r\n",
+					"\r\n",
+					"# set brend and table\r\n",
+					"# STAVKE_NA_KOMIS_NALOGU, KOMIS_NALOG, POVRAT_KARTON, POVRAT_KOMAD,  komisionAggFinal,  povratAggFinal\r\n",
+					"brend = 'Grupno'\r\n",
+					"table = 'src.komisionAggFinal'"
+				],
+				"execution_count": 9
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
 					},
 					"collapsed": false
 				},
 				"source": [
 					"# connect to database with credentials, execut SQL \r\n",
-					"# STAVKE_NA_KOMIS_NALOGU, KOMIS_NALOG, POVRAT_KARTON, POVRAT_KOMAD,  komisionAggFinal,  povratAggFinal\r\n",
 					"item = 'STAVKE_NA_KOMIS_NALOGU'\r\n",
-					"brend = 'Grupno'\r\n",
-					"table = 'src.komisionAggFinal'\r\n",
 					"df = import_ds_total(item, brend, table)\r\n",
 					"\r\n",
 					"# call arima function on dataset\r\n",
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 599
+				"execution_count": 10
 			},
 			{
 				"cell_type": "code",
@@ -479,15 +469,13 @@
 				"source": [
 					"# connect to database with credentials, execut SQL \r\n",
 					"item = 'KOMIS_NALOG'\r\n",
-					"brend = 'Grupno'\r\n",
-					"table = 'src.komisionAggFinal'\r\n",
 					"df = import_ds_total(item, brend, table)\r\n",
 					"\r\n",
 					"# call custom arima function on dataset\r\n",
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 600
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -505,15 +493,13 @@
 				"source": [
 					"# connect to database with credentials, execut SQL \r\n",
 					"item = 'POVRAT_KARTON'\r\n",
-					"brend = 'Grupno'\r\n",
-					"table = 'src.povratAggFinal'\r\n",
 					"df = import_ds_total(item, brend, table)\r\n",
 					"\r\n",
 					"# call arima function on dataset\r\n",
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": null
+				"execution_count": 12
 			},
 			{
 				"cell_type": "code",
@@ -531,15 +517,13 @@
 				"source": [
 					"# connect to database with credentials, execut SQL \r\n",
 					"item = 'POVRAT_KOMAD'\r\n",
-					"brend = 'Grupno'\r\n",
-					"table = 'src.povratAggFinal'\r\n",
 					"df = import_ds_total(item, brend, table)\r\n",
 					"\r\n",
 					"# call arima function on dataset\r\n",
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 602
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -588,7 +572,7 @@
 					" .format(\"com.databricks.spark.csv\")\r\n",
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
 				],
-				"execution_count": 603
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -622,7 +606,7 @@
 					"# pyplot.legend(loc=\"upper left\")\r\n",
 					"# pyplot.show()"
 				],
-				"execution_count": 604
+				"execution_count": null
 			}
 		]
 	}
