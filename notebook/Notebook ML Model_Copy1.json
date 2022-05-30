@@ -1,6 +1,9 @@
 {
-	"name": "Notebook ML Model",
+	"name": "Notebook ML Model_Copy1",
 	"properties": {
+		"folder": {
+			"name": "Archive"
+		},
 		"nbformat": 4,
 		"nbformat_minor": 2,
 		"bigDataPool": {
@@ -17,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "da4f79ff-e94d-4b0c-b5cb-57c70809657d"
+				"spark.autotune.trackingId": "aa2c7284-bb5e-456a-b2a5-107e31a5cfa4"
 			}
 		},
 		"metadata": {
@@ -102,7 +105,7 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"execution_count": 591
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
