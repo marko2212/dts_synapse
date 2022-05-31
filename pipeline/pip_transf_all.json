@@ -22,7 +22,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[PovratBrend]"
+					"storedProcedureName": "[prc].[PovratBrend]"
 				},
 				"linkedServiceName": {
 					"referenceName": "ls_asql_db",
@@ -96,7 +96,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[Povrat]"
+					"storedProcedureName": "[prc].[Povrat]"
 				},
 				"linkedServiceName": {
 					"referenceName": "ls_asql_db",
