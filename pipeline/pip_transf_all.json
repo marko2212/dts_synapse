@@ -69,7 +69,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[KomisionBrend]"
+					"storedProcedureName": "[prc].[KomisionBrend]"
 				},
 				"linkedServiceName": {
 					"referenceName": "ls_asql_db",
