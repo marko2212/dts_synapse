@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Notebook ML Model ",
+				"name": "Notebook ML Model",
 				"type": "SynapseNotebook",
 				"dependsOn": [],
 				"policy": {
