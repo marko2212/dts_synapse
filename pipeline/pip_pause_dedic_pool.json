@@ -1,0 +1,36 @@
+{
+	"name": "pip_pause_dedic_pool",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web pause_dedic_pool",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://management.azure.com/subscriptions/3d1a0d9a-7e0f-434a-bb08-b3b842299587/resourceGroups/Synapse_Analytics/providers/Microsoft.Sql/servers/synapsedtsws/databases/smallPoolDed/pause?api-version=2020-08-01-preview ",
+					"connectVia": {
+						"referenceName": "AutoResolveIntegrationRuntime",
+						"type": "IntegrationRuntimeReference"
+					},
+					"method": "POST",
+					"authentication": {
+						"type": "MSI",
+						"resource": "https://management.azure.com/"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "Test synapse"
+		},
+		"annotations": []
+	}
+}
