@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "0e1ec3dc-ac31-41d0-9387-25bb6ca20653"
+				"spark.autotune.trackingId": "5bc3620e-f36c-49aa-aa47-aa5ee370eccd"
 			}
 		},
 		"metadata": {
@@ -475,7 +475,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 11
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -499,7 +499,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 12
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -573,6 +573,24 @@
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
 				],
 				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"prediction_contaier"
+				],
+				"execution_count": 11
 			},
 			{
 				"cell_type": "markdown",
