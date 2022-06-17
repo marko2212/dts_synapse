@@ -1,0 +1,16 @@
+{
+	"name": "ls_RestService1_JSON",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://opendata.stat.gov.rs/data/WcfJsonRestService.Service1.svc/dataset/1802010001IND01/2/json",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		},
+		"connectVia": {
+			"referenceName": "AutoResolveIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
