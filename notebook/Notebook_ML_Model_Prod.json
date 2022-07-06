@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d92ed1ea-68eb-4507-8422-1ceb877706af"
+				"spark.autotune.trackingId": "9e4bfdea-3e4a-4029-acb8-7b9d5d15d2ed"
 			}
 		},
 		"metadata": {
@@ -86,10 +86,6 @@
 					"import time\r\n",
 					"from dateutil.parser import parse \r\n",
 					"import math\r\n",
-					"\r\n",
-					"import warnings\r\n",
-					"warnings.simplefilter(\"ignore\")\r\n",
-					"\r\n",
 					"from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error   # metrics\r\n",
 					"from statsmodels.tsa.seasonal import seasonal_decompose\r\n",
 					"from statsmodels.graphics.tsaplots import plot_pacf\r\n",
@@ -98,10 +94,13 @@
 					"from statsmodels.tsa.arima.model import ARIMA\r\n",
 					"import pmdarima as pm\r\n",
 					"\r\n",
+					"import warnings\r\n",
+					"warnings.simplefilter(\"ignore\")\r\n",
+					"\r\n",
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"execution_count": 1
+				"execution_count": 16
 			},
 			{
 				"cell_type": "markdown",
@@ -154,7 +153,7 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"execution_count": 2
+				"execution_count": 17
 			},
 			{
 				"cell_type": "markdown",
@@ -195,7 +194,7 @@
 					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
 					"  return df"
 				],
-				"execution_count": 3
+				"execution_count": 18
 			},
 			{
 				"cell_type": "markdown",
@@ -237,7 +236,7 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"execution_count": 4
+				"execution_count": 19
 			},
 			{
 				"cell_type": "markdown",
@@ -290,7 +289,7 @@
 					"        prediction_contaier =  prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
 					"    return prediction_contaier"
 				],
-				"execution_count": 5
+				"execution_count": 20
 			},
 			{
 				"cell_type": "markdown",
@@ -323,7 +322,6 @@
 					"    pushdown_query = \"(SELECT DATUM, {0} FROM {2} ) {1}\".format(item,brend,table) \r\n",
 					"    df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
 					"    df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
-					"\r\n",
 					"    df = df.sort_values(by=\"DATUM\")               # Sort dataframe by date\r\n",
 					"    df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
 					"    df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
@@ -332,7 +330,7 @@
 					"    return df \r\n",
 					""
 				],
-				"execution_count": 6
+				"execution_count": 21
 			},
 			{
 				"cell_type": "markdown",
@@ -384,7 +382,7 @@
 					"brend = 'Grupno'\r\n",
 					"table = 'src.komisionAggFinal'"
 				],
-				"execution_count": 7
+				"execution_count": 22
 			},
 			{
 				"cell_type": "code",
@@ -409,7 +407,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 8
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -434,7 +432,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 9
+				"execution_count": 24
 			},
 			{
 				"cell_type": "code",
@@ -460,7 +458,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 10
+				"execution_count": 25
 			},
 			{
 				"cell_type": "code",
@@ -484,7 +482,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": 11
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -533,7 +531,7 @@
 					" .format(\"com.databricks.spark.csv\")\r\n",
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
 				],
-				"execution_count": 12
+				"execution_count": 27
 			},
 			{
 				"cell_type": "code",
@@ -551,7 +549,7 @@
 				"source": [
 					"prediction_contaier.head(10)"
 				],
-				"execution_count": 13
+				"execution_count": 28
 			},
 			{
 				"cell_type": "markdown",
@@ -563,7 +561,7 @@
 					}
 				},
 				"source": [
-					"# Write prediction df to Azure SQL database using spark"
+					"# Write prediction_contaier df to Azure SQL database using spark"
 				]
 			},
 			{
@@ -583,7 +581,7 @@
 					"predictionGrupnoDF = spark.createDataFrame(prediction_contaier)                   # Create PySpark DataFrame from Pandas\r\n",
 					"predictionGrupnoDF.write.jdbc(url=jdbcUrl, table=\"src.predictionGrupno\", properties=connectionProperties, mode =\"overwrite\")"
 				],
-				"execution_count": 15
+				"execution_count": 29
 			},
 			{
 				"cell_type": "markdown",
@@ -602,8 +600,8 @@
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
-						"source_hidden": true,
-						"outputs_hidden": false
+						"source_hidden": false,
+						"outputs_hidden": true
 					},
 					"nteract": {
 						"transient": {
@@ -617,7 +615,7 @@
 					"# pyplot.legend(loc=\"upper left\")\r\n",
 					"# pyplot.show()"
 				],
-				"execution_count": 14
+				"execution_count": 30
 			}
 		]
 	}
