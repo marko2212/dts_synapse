@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "50308cf2-43a5-42d2-9233-cae21ffc74d2"
+				"spark.autotune.trackingId": "6922fd57-ec95-41a8-ad48-ffd4a438e558"
 			}
 		},
 		"metadata": {
@@ -114,7 +114,7 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"execution_count": 5
+				"execution_count": 19
 			},
 			{
 				"cell_type": "markdown",
@@ -172,7 +172,7 @@
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"execution_count": 6
+				"execution_count": 20
 			},
 			{
 				"cell_type": "markdown",
@@ -214,7 +214,7 @@
 					"  return df\r\n",
 					""
 				],
-				"execution_count": 7
+				"execution_count": 21
 			},
 			{
 				"cell_type": "markdown",
@@ -248,7 +248,7 @@
 					"  df_week = df.groupby('year_month_week').sum()         # group df by week\r\n",
 					"  return df_week"
 				],
-				"execution_count": 17
+				"execution_count": 22
 			},
 			{
 				"cell_type": "markdown",
@@ -290,7 +290,7 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"execution_count": 8
+				"execution_count": 23
 			},
 			{
 				"cell_type": "code",
@@ -317,7 +317,7 @@
 					"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
 					"df"
 				],
-				"execution_count": 9
+				"execution_count": 24
 			},
 			{
 				"cell_type": "markdown",
@@ -354,7 +354,7 @@
 					"\r\n",
 					"test.head()"
 				],
-				"execution_count": 10
+				"execution_count": 25
 			},
 			{
 				"cell_type": "markdown",
@@ -383,6 +383,27 @@
 					}
 				},
 				"source": [
+					"# order = [28,1,1]\r\n",
+					"# model = ARIMA(train, order=(order))\r\n",
+					"# model_fit = model.fit()\r\n",
+					"train"
+				],
+				"execution_count": 28
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": true
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
 					"# model = ARIMA(train, order=(p,d,q))\r\n",
 					"order = [28,1,1]\r\n",
 					"model = ARIMA(train, order=(order))\r\n",
@@ -397,7 +418,7 @@
 					"prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
 					"prediction"
 				],
-				"execution_count": 14
+				"execution_count": 26
 			},
 			{
 				"cell_type": "markdown",
@@ -436,7 +457,7 @@
 					"metric_table(test, prediction)             # metric table\r\n",
 					""
 				],
-				"execution_count": 15
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -477,7 +498,7 @@
 					"print(order)\r\n",
 					"metric_table(test_week, prediction_week)             # metric table"
 				],
-				"execution_count": 18
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -597,7 +618,7 @@
 					"\tprint('Best ARIMA%s MSE=%.3f' % (best_cfg, best_score))\r\n",
 					" "
 				],
-				"execution_count": 19
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -627,7 +648,7 @@
 					"\r\n",
 					"print(datetime.now() - t_now)"
 				],
-				"execution_count": 21
+				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
