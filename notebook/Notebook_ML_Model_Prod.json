@@ -1,5 +1,5 @@
 {
-	"name": "Notebook ML Model_2022_06_21 t",
+	"name": "Notebook_ML_Model_Prod",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "23662df9-002d-44ab-bf88-57291482dc78"
+				"spark.autotune.trackingId": "6aeb7e07-a08a-41d7-bbe2-6bfa82d9ac53"
 			}
 		},
 		"metadata": {
@@ -82,7 +82,6 @@
 					"import matplotlib.pyplot as pyplot\r\n",
 					"import matplotlib.pyplot as plt\r\n",
 					"import seaborn as sns\r\n",
-					"\r\n",
 					"from datetime import datetime, timedelta\r\n",
 					"import time\r\n",
 					"from dateutil.parser import parse \r\n",
@@ -102,7 +101,7 @@
 					"pyplot.rcParams.update({'figure.figsize': (10, 7), 'figure.dpi': 120})\r\n",
 					"print('lib are imported')"
 				],
-				"execution_count": 1
+				"execution_count": 64
 			},
 			{
 				"cell_type": "markdown",
@@ -132,18 +131,14 @@
 				},
 				"source": [
 					"def metric_table(test, predictions):\r\n",
-					"    \r\n",
 					"  mse = mean_squared_error(test, predictions)\r\n",
 					"  model_r2, model_RMSE, model_MAE, model_MSE, model_Adj_R2 = [], [], [], [], []\r\n",
-					"\r\n",
 					"\r\n",
 					"  r2 = r2_score(test, predictions)\r\n",
 					"  rmse = np.sqrt(mean_squared_error(test, predictions))\r\n",
 					"  mae = mean_absolute_error(test, predictions)\r\n",
 					"  mse = mean_squared_error(test, predictions)\r\n",
 					"  # mape = mean_absolute_percentage_error(test, predictions)\r\n",
-					"\r\n",
-					"  # adj_r2 = 1-(1-r2)*(n-1)/(n-p-1)       # n - broj uzoraka, p - broj nezavis var\r\n",
 					"  adj_r2 = 1-(1-r2)*(test.shape[0]-1)/(test.shape[0]-1-1)\r\n",
 					"\r\n",
 					"  model_r2.append(r2)\r\n",
@@ -153,14 +148,13 @@
 					"  # model_MAPE.append(mape)\r\n",
 					"  model_Adj_R2.append(adj_r2)\r\n",
 					"\r\n",
-					"\r\n",
 					"  df_result = pd.DataFrame({\"R2\":model_r2, \"Adj_R2\": model_Adj_R2, \"RMSE\": model_RMSE, \"MAE\":model_MAE, \"MSE\": model_MSE})\r\n",
 					"  df_result = round(df_result,3)\r\n",
 					"  df_result = df_result.sort_values(\"R2\", ascending=False)\r\n",
 					"  df_result\r\n",
 					"  return df_result"
 				],
-				"execution_count": 2
+				"execution_count": 65
 			},
 			{
 				"cell_type": "markdown",
@@ -201,7 +195,7 @@
 					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
 					"  return df"
 				],
-				"execution_count": 3
+				"execution_count": 66
 			},
 			{
 				"cell_type": "markdown",
@@ -243,7 +237,7 @@
 					"    \"driver\" : \"com.microsoft.sqlserver.jdbc.SQLServerDriver\"\r\n",
 					"}"
 				],
-				"execution_count": 4
+				"execution_count": 67
 			},
 			{
 				"cell_type": "markdown",
@@ -296,7 +290,7 @@
 					"        prediction_contaier =  prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
 					"    return prediction_contaier"
 				],
-				"execution_count": 5
+				"execution_count": 68
 			},
 			{
 				"cell_type": "markdown",
@@ -330,6 +324,7 @@
 					"    df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
 					"    df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
 					"\r\n",
+					"    df = df.sort_values(by=\"DATUM\")               # Sort dataframe by date\r\n",
 					"    df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
 					"    df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
 					"    df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
@@ -337,139 +332,7 @@
 					"    return df \r\n",
 					""
 				],
-				"execution_count": 6
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# test\r\n",
-					"pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ORDER BY DATUM ASC ) Grupno\"\r\n",
-					"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
-					"# df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
-					"\r\n",
-					"\r\n",
-					"# # df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
-					"# # df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
-					"# # # df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
-					"\r\n",
-					"# df.head(5)"
-				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					""
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"df2 = df.copy()\r\n",
-					"# df2\r\n",
-					"\r\n",
-					"# df2 = add_all_date(df2, )\r\n",
-					"# df2"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# def add_all_date(df2, whitout_sun=0):\r\n",
-					"\r\n",
-					"whitout_sun=0\r\n",
-					"\r\n",
-					"rng = pd.date_range(start = df2.index[0], end =df2.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
-					"df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
-					"if whitout_sun == 1:\r\n",
-					"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
-					"df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
-					"# df2 = df2[df2.index.weekday != 6]                                                # removing sunday (6) from df2\r\n",
-					"# df2 = df_date_temp.join(df2)                                                    # left join dataset on dummy date\r\n",
-					"# df2 = df2.fillna(0)                                                             # fill NaN values with 0\r\n",
-					"# df2 = df2.iloc[:,-1:].astype(int)                                               # convert string to int\r\n",
-					"\r\n",
-					"df2\r\n",
-					"df_date_temp\r\n",
-					"\r\n",
-					"# start = df2.index[0]\r\n",
-					"# df2.index[0]\r\n",
-					"# df2.index[-1]\r\n",
-					"# df2"
-				],
-				"execution_count": null
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": false,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"  rng = pd.date_range(start = df.index[0], end =df.index[-1],  freq='D')        # pocetni datum je prvi index (datum), rajnji datum je poslednji red indexa\r\n",
-					"  df_date_temp = pd.DataFrame({ 'DATUM': rng}) \r\n",
-					"  if whitout_sun == 1:\r\n",
-					"    df_date_temp = df_date_temp[df_date_temp['DATUM'].dt.weekday != 6]          # removing sunday (6) from dummy df_date_temp\r\n",
-					"  df_date_temp.set_index('DATUM', inplace=True)                                 # set column date as index\r\n",
-					"  df = df[df.index.weekday != 6]                                                # removing sunday (6) from df\r\n",
-					"  df = df_date_temp.join(df)                                                    # left join dataset on dummy date\r\n",
-					"  df = df.fillna(0)                                                             # fill NaN values with 0\r\n",
-					"  df = df.iloc[:,-1:].astype(int)                                               # convert string to int"
-				],
-				"execution_count": null
+				"execution_count": 69
 			},
 			{
 				"cell_type": "markdown",
@@ -483,42 +346,6 @@
 				"source": [
 					"### Train ARIMA model and prediction"
 				]
-			},
-			{
-				"cell_type": "code",
-				"metadata": {
-					"jupyter": {
-						"source_hidden": true,
-						"outputs_hidden": false
-					},
-					"nteract": {
-						"transient": {
-							"deleting": false
-						}
-					}
-				},
-				"source": [
-					"# n = 19\r\n",
-					"# order = [28,0,0]\r\n",
-					"# order = [3,0,0]\r\n",
-					"# model = ARIMA(df, order=(order))\r\n",
-					"# model_fit = model.fit()\r\n",
-					"# prediction = model_fit.forecast(n)\r\n",
-					"\r\n",
-					"# # korekcije\r\n",
-					"# prediction = prediction.clip(lower=0)                           # sve negativne vrednosti svedi na 0\r\n",
-					"# prediction = add_all_date(prediction)                           # set sundey to 0\r\n",
-					"# prediction = prediction.rename(columns={'predicted_mean': item})        # set the name of column as item\r\n",
-					"# prediction.head()\r\n",
-					"\r\n",
-					"# # ako prediction_contaier ne postoji kreiraj ga od prve predikcije, u suprotnom dodaj novu predikciju na prediction_contaier\r\n",
-					"# if 'prediction_contaier' not in locals():               \r\n",
-					"#     prediction_contaier = prediction\r\n",
-					"# else:\r\n",
-					"#     prediction_contaier = prediction_contaier.join(prediction, how='left', lsuffix='_left', rsuffix='_right')\r\n",
-					"# prediction_contaier.head()"
-				],
-				"execution_count": null
 			},
 			{
 				"cell_type": "markdown",
@@ -557,7 +384,7 @@
 					"brend = 'Grupno'\r\n",
 					"table = 'src.komisionAggFinal'"
 				],
-				"execution_count": null
+				"execution_count": 70
 			},
 			{
 				"cell_type": "code",
@@ -582,7 +409,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": null
+				"execution_count": 71
 			},
 			{
 				"cell_type": "code",
@@ -607,7 +434,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": null
+				"execution_count": 72
 			},
 			{
 				"cell_type": "code",
@@ -625,13 +452,15 @@
 				"source": [
 					"# connect to database with credentials, execut SQL \r\n",
 					"item = 'POVRAT_KARTON'\r\n",
+					"table = 'src.povratAggFinal'\r\n",
+					"\r\n",
 					"df = import_ds_total(item, brend, table)\r\n",
 					"\r\n",
 					"# call arima function on dataset\r\n",
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": null
+				"execution_count": 73
 			},
 			{
 				"cell_type": "code",
@@ -655,7 +484,7 @@
 					"prediction_contaier = arima(df)\r\n",
 					"prediction_contaier.head(2)"
 				],
-				"execution_count": null
+				"execution_count": 74
 			},
 			{
 				"cell_type": "markdown",
@@ -704,7 +533,7 @@
 					" .format(\"com.databricks.spark.csv\")\r\n",
 					" .save('abfss://processed@dlsynapsedts.dfs.core.windows.net/dmd/' + folder_name))"
 				],
-				"execution_count": null
+				"execution_count": 75
 			},
 			{
 				"cell_type": "code",
@@ -720,9 +549,9 @@
 					}
 				},
 				"source": [
-					"prediction_contaier"
+					"prediction_contaier.head(10)"
 				],
-				"execution_count": null
+				"execution_count": 79
 			},
 			{
 				"cell_type": "markdown",
@@ -741,7 +570,7 @@
 				"cell_type": "code",
 				"metadata": {
 					"jupyter": {
-						"source_hidden": false,
+						"source_hidden": true,
 						"outputs_hidden": false
 					},
 					"nteract": {
@@ -756,7 +585,7 @@
 					"# pyplot.legend(loc=\"upper left\")\r\n",
 					"# pyplot.show()"
 				],
-				"execution_count": null
+				"execution_count": 77
 			}
 		]
 	}
