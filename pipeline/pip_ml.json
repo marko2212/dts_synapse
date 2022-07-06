@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"notebook": {
-						"referenceName": "Notebook ML Model",
+						"referenceName": "Notebook_ML_Model_Prod",
 						"type": "NotebookReference"
 					},
 					"snapshot": true,
