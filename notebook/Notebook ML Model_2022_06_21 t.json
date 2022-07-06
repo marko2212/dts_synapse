@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "75feff01-e3f4-481c-9323-bccd71f3c6b4"
+				"spark.autotune.trackingId": "23662df9-002d-44ab-bf88-57291482dc78"
 			}
 		},
 		"metadata": {
@@ -356,16 +356,34 @@
 					"# test\r\n",
 					"pushdown_query = \"(SELECT DATUM, STAVKE_NA_KOMIS_NALOGU FROM src.komisionAggFinal ORDER BY DATUM ASC ) Grupno\"\r\n",
 					"df_spark = spark.read.jdbc(url=jdbcUrl, table=pushdown_query, properties=connectionProperties)\r\n",
-					"df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
+					"# df = df_spark.toPandas()                      # Spark df to Pandas df\r\n",
 					"\r\n",
 					"\r\n",
-					"df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
-					"df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
-					"# df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
+					"# # df.set_index('DATUM', inplace=True)           # convert DATUM column to index\r\n",
+					"# # df.index = pd.to_datetime(df.index)           # convert index to datetime\r\n",
+					"# # # df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
 					"\r\n",
-					"df.head(5)"
+					"# df.head(5)"
 				],
-				"execution_count": 7
+				"execution_count": 11
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
