@@ -20,7 +20,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d03399b1-47f9-4516-bdec-7598c4c7f780"
+				"spark.autotune.trackingId": "d49866f4-01ca-4f86-b990-053c267551d5"
 			}
 		},
 		"metadata": {
@@ -1463,6 +1463,43 @@
 					"df = add_all_date(df, )                       # add all missing date with (df, 0) or without (df, 1) sunday\r\n",
 					"df.head(2)\r\n",
 					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "markdown",
+				"metadata": {
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"# Write df to Azure SQL Database"
+				]
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df2 = pd.DataFrame(np.array([[1, 2], [4, 5], [7, 8]]),\r\n",
+					"                   columns=['Col1', 'Co2'])\r\n",
+					"df2\r\n",
+					"\r\n",
+					"\r\n",
+					"sparkDF=spark.createDataFrame(df2)    # Create PySpark DataFrame from Pandas\r\n",
+					"sparkDF.show()"
 				],
 				"execution_count": null
 			}
