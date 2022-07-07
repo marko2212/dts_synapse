@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "9e4bfdea-3e4a-4029-acb8-7b9d5d15d2ed"
+				"spark.autotune.trackingId": "876065a6-0aa3-4509-ad1f-408adf8cd255"
 			}
 		},
 		"metadata": {
@@ -521,7 +521,7 @@
 					"prediction_contaier.head()\r\n",
 					"\r\n",
 					"\r\n",
-					"# Output using Spark\r\n",
+					"# Store prediction_contaier to blbo storage using skpark\r\n",
 					"folder_name = brend\r\n",
 					"(sqlContext.createDataFrame(prediction_contaier)\r\n",
 					" .coalesce(1)\r\n",
@@ -582,6 +582,24 @@
 					"predictionGrupnoDF.write.jdbc(url=jdbcUrl, table=\"src.predictionGrupno\", properties=connectionProperties, mode =\"overwrite\")"
 				],
 				"execution_count": 29
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"predictionGrupnoDF.show()"
+				],
+				"execution_count": 31
 			},
 			{
 				"cell_type": "markdown",
