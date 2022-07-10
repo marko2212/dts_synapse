@@ -15,10 +15,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"notebook": {
-						"referenceName": "notebook_test_run",
-						"type": "NotebookReference"
-					},
 					"snapshot": true,
 					"sparkPool": {
 						"referenceName": "SparkSmall",
