@@ -13,7 +13,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "ds_dl_mat_xls",
+						"referenceName": "ds_dl_mat_csv",
 						"type": "DatasetReference"
 					},
 					"name": "sourceMat"
@@ -28,24 +28,12 @@
 			],
 			"sinks": [
 				{
-					"dataset": {
-						"referenceName": "ds_dl_processed_dmd_sink_csv",
-						"type": "DatasetReference"
-					},
 					"name": "sinkKomis"
 				},
 				{
-					"dataset": {
-						"referenceName": "ds_dl_processed_dmd_sink_csv",
-						"type": "DatasetReference"
-					},
 					"name": "sinkPovrat"
 				},
 				{
-					"dataset": {
-						"referenceName": "ds_dl_processed_dmd_sink_csv",
-						"type": "DatasetReference"
-					},
 					"name": "sink1"
 				}
 			],
@@ -124,8 +112,8 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> sourceSAP",
 				"source(output(",
-				"          Sifra_materijala as integer,",
-				"          Broj_komada_u_kart as short",
+				"          SIFRA_MATERIJALA as string,",
+				"          BROJ_KOMADA_U_KART as string",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -158,6 +146,8 @@
 				"     disjoint: false) ~> split1@(Povrat, Komision)",
 				"select4Col, sourceMat join(MATERIJAL == Sifra_materijala,",
 				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> joinMat",
 				"filterRazlogPovrata select(mapColumn(",
 				"          DATUM,",
@@ -198,6 +188,8 @@
 				"&& in(['LB', 'ZLA', 'ZLE', 'ZLO', 'ZLF', 'RL', 'Y73', 'YO3', 'YU3', 'YZO1', 'YZU1'], TIP_ISPORUKE)) ~> filterSkladKolic",
 				"selectRename, selectRenBrend join(selectRename@ODELJAK == selectRenBrend@Odeljak,",
 				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join1",
 				"sourceBrend select(mapColumn(",
 				"          Odeljak,",
@@ -208,30 +200,27 @@
 				"derivedDate sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['komisionAgg.csv'],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sinkKomis",
+				"     partitionBy('hash', 1),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> sinkKomis",
 				"sortDat sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['povratAgg.csv'],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sinkPovrat",
+				"     partitionBy('hash', 1),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> sinkPovrat",
 				"filterSkladKolic sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['test2preporc.csv'],",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     partitionBy('hash', 1)) ~> sink1"
+				"     partitionBy('hash', 1),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> sink1"
 			]
 		}
 	}
