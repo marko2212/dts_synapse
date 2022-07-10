@@ -1,0 +1,29 @@
+{
+	"name": "ds_dl_to_sql_2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_asa_dts",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "DMD_2020.csv",
+				"folderPath": "dmd/SAP",
+				"fileSystem": "row"
+			},
+			"columnDelimiter": "|",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "DOKUMENT_ISPORUKE|STAVKA|OBLAST_PRODAJE|WBSTK|PRIMALAC_ROBE|TIP_ISPORUKE|TIP_PROD_DOK|DATUM_ISPORUKE|DOBAVLJAC|PLANIRANI_DATUM_ISPORUKE|STVARNI_DATUM_ISPORUKE|MATERIJAL|KOLICINA|SKLADISNA_LOKACIJA|POGON|ODELJAK|SIFRA_RAZLOGA_POVRATA|OPIS_RAZLOGA_POVRATA",
+				"type": "String"
+			}
+		]
+	}
+}

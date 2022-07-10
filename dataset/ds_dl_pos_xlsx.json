@@ -1,0 +1,24 @@
+{
+	"name": "ds_dl_pos_xlsx",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_asa_dts",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "baza urađenih naloga",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "evidencija_urađenih_naloga_POS_2020.xlsx",
+				"folderPath": "dmd/POS",
+				"fileSystem": "row"
+			},
+			"range": "A9:K1000000",
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}
