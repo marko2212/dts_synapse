@@ -1,0 +1,21 @@
+{
+	"name": "Excel1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_dl_asa_dts",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Sheet 1",
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "Brendovi_source_2022_04_20.xls",
+				"folderPath": "dmd/Odeljak",
+				"fileSystem": "row"
+			}
+		},
+		"schema": []
+	}
+}
